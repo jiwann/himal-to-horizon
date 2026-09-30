@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { ArrowLeft, Plane } from "lucide-react";
-import logoImg from "@assets/logo_1772143671966.png";
+import logoImg from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { loadOfferForBooking } from "@/lib/offer-cache";
 import { formatCurrency } from "@/lib/utils";

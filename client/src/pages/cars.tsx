@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Car, ExternalLink, Shield, ShieldCheck, Plane, BedDouble, ShieldPlus, Compass, User } from "lucide-react";
 import { NavTabs } from "@/components/nav-tabs";
 import { useLanguage } from "@/contexts/language-context";
-import logoImg from "@assets/logo_1772143671966.png";
+import logoImg from "@/assets/logo.png";
 import { VisaWidget } from "@/components/visa-widget";
 import { AuthModal } from "@/components/auth-modal";
 import { UserMenu } from "@/components/user-menu";

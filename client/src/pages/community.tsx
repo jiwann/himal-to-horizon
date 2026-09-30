@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { useQuery } from "@tanstack/react-query";
 import { Globe, Users, PenLine, Loader2, User } from "lucide-react";
 import { NavTabs } from "@/components/nav-tabs";
-import logoImg from "@assets/logo_1772143671966.png";
+import logoImg from "@/assets/logo.png";
 import { AuthModal } from "@/components/auth-modal";
 import { UserMenu } from "@/components/user-menu";
 import { useLanguage } from "@/contexts/language-context";

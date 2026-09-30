@@ -3,7 +3,7 @@ import { useLocation } from "wouter";
 import { Star, MapPin, ArrowLeft, PenLine, BookOpen, Heart, MessageCircle, Stamp } from "lucide-react";
 import { useMutation } from "@tanstack/react-query";
 import { Button } from "@/components/ui/button";
-import logoImg from "@assets/logo_1772143671966.png";
+import logoImg from "@/assets/logo.png";
 import { CATEGORY_META, VISA_OUTCOME_META, countryFlag, timeAgo } from "@/lib/community";
 import { communityUI, categoryUIKey, outcomeUIKey } from "@/lib/community-ui-i18n";
 import { useLanguage } from "@/contexts/language-context";

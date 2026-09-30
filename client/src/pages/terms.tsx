@@ -1,7 +1,7 @@
 import { useEffect } from "react";
 import { useLocation } from "wouter";
 import { ArrowLeft, ScrollText } from "lucide-react";
-import logoImg from "@assets/logo_1772143671966.png";
+import logoImg from "@/assets/logo.png";
 import { useLanguage } from "@/contexts/language-context";
 import { setSEO, resetSEO } from "@/lib/seo";
 

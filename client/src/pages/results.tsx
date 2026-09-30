@@ -7,7 +7,7 @@ import {
   X, Info, MountainSnow,
   Bell, BellOff, User,
 } from "lucide-react";
-import logoImg from "@assets/logo_1772143671966.png";
+import logoImg from "@/assets/logo.png";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Skeleton } from "@/components/ui/skeleton";
