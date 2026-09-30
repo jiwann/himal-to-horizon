@@ -129,6 +129,10 @@ async function main() {
   console.log(`Parsing ${lines.length} rows…`);
 
   const requirements = {};
+  // Visa-free stay length in days, when the source gives one (numeric
+  // requirement values). Passport-specific, unlike the generic maxStay in
+  // destination-requirements.json; read by getStayDays() in passport-lookup.ts.
+  const stayDays = {};
   const unmapped = new Set();
 
   for (const line of lines) {
@@ -144,6 +148,9 @@ async function main() {
 
     const status = mapRequirement(requirement);
     requirements[`${passportISO}->${destISO}`] = status;
+    if (/^\d+$/.test(requirement.trim())) {
+      stayDays[`${passportISO}->${destISO}`] = Number(requirement.trim());
+    }
   }
 
   const output = {
@@ -151,6 +158,7 @@ async function main() {
     source: "https://github.com/ilyankou/passport-index-dataset",
     count: Object.keys(requirements).length,
     requirements,
+    stayDays,
   };
 
   writeFileSync(OUT_PATH, JSON.stringify(output));

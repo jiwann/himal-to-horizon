@@ -9,6 +9,7 @@ import jurisdictions from "@/lib/jurisdictions.json";
 import officialPortals from "@/lib/official-portals.json";
 import destRequirements from "@/lib/destination-requirements.json";
 import { setSEO, resetSEO } from "@/lib/seo";
+import { describeFee, getStayDays, getNepalOverride } from "@/lib/passport-lookup";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -236,6 +237,22 @@ export default function VisaCheckPage() {
 
   const statusType: StatusType = tier1 ? tier1.statusType : tier2Status;
   const sc = STATUS_CONFIG[statusType] ?? STATUS_CONFIG.unknown;
+
+  // Display values for the generic (tier-2) view. destReq is one record per
+  // destination for every passport, so visa-free/on-arrival pairs get
+  // passport-aware fee, stay and processing text instead of, say, another
+  // nationality's sticker-visa fee.
+  const npOverride = originInfo?.iso === "NP" && destInfo ? getNepalOverride(destInfo.iso) : undefined;
+  const feeText = npOverride?.fee ?? describeFee(statusType, destReq?.fee) ?? "Varies";
+  const stayDays = statusType === "visa_free"
+    ? (originInfo && destInfo ? getStayDays(originInfo.iso, destInfo.iso) : undefined)
+    : destReq?.maxStay;
+  const stayText = npOverride?.stay ?? (stayDays ? `${stayDays} days` : "Varies");
+  const processingText = statusType === "visa_free"
+    ? "No visa needed"
+    : statusType === "visa_on_arrival"
+      ? "On arrival"
+      : destReq?.processingTime ?? "Varies";
   const StatusIcon = sc.icon;
 
   const generatedAt: string = (passportIndex as any).generated;
@@ -258,9 +275,9 @@ export default function VisaCheckPage() {
     const originName = originInfo.name;
     const destName = destInfo.name;
     const statusLabel = sc.label;
-    const fee = destReq?.fee ?? "Varies";
-    const processing = destReq?.processingTime ?? "Varies";
-    const maxStay = destReq ? `${destReq.maxStay} days` : "Varies";
+    const fee = feeText;
+    const processing = processingText;
+    const maxStay = stayText;
     const docs = destReq?.docs?.slice(0, 4).join(", ") ?? "Passport (6+ months validity)";
 
     const faqSchema = {
@@ -319,7 +336,7 @@ export default function VisaCheckPage() {
     return () => {
       document.getElementById("visa-faq-jsonld")?.remove();
     };
-  }, [originInfo, destInfo, sc, destReq]);
+  }, [originInfo, destInfo, sc, destReq, feeText, processingText, stayText]);
 
   // ─── Not Found ───────────────────────────────────────────────────────────────
   if (!originInfo || !destInfo) {
@@ -581,23 +598,23 @@ export default function VisaCheckPage() {
                   <div className="px-5 py-4" style={{ background: "rgba(255,255,255,0.02)" }}>
                     <div className="flex items-center gap-1.5 mb-1">
                       <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
-                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Typical Fee</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{statusType === "visa_free" ? "Visa Fee" : "Typical Fee"}</p>
                     </div>
-                    <p className="text-sm font-semibold text-foreground/80" data-testid="fee-value">{destReq.fee}</p>
+                    <p className="text-sm font-semibold text-foreground/80" data-testid="fee-value">{feeText}</p>
                   </div>
                   <div className="px-5 py-4" style={{ background: "rgba(255,255,255,0.02)" }}>
                     <div className="flex items-center gap-1.5 mb-1">
                       <Clock className="h-3.5 w-3.5 text-muted-foreground" />
                       <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Processing</p>
                     </div>
-                    <p className="text-sm font-semibold text-foreground/80" data-testid="processing-value">{destReq.processingTime}</p>
+                    <p className="text-sm font-semibold text-foreground/80" data-testid="processing-value">{processingText}</p>
                   </div>
                   <div className="px-5 py-4" style={{ background: "rgba(255,255,255,0.02)" }}>
                     <div className="flex items-center gap-1.5 mb-1">
                       <Globe className="h-3.5 w-3.5 text-muted-foreground" />
                       <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Max Stay</p>
                     </div>
-                    <p className="text-sm font-semibold text-foreground/80" data-testid="maxstay-value">{destReq.maxStay} days</p>
+                    <p className="text-sm font-semibold text-foreground/80" data-testid="maxstay-value">{stayText}</p>
                   </div>
                 </div>
               )}
@@ -617,7 +634,7 @@ export default function VisaCheckPage() {
                       <p className="text-sm font-semibold" style={{ color: sc.color }}>Apply Online Before Travel</p>
                       <p className="text-xs text-muted-foreground mt-1">
                         {destReq
-                          ? `Apply for the ${destInfo.name} e-Visa at least ${destReq.processingTime.toLowerCase()} before your trip. Fee: ${destReq.fee}.`
+                          ? `Apply for the ${destInfo.name} e-Visa at least ${processingText.toLowerCase()} before your trip. Fee: ${feeText}.`
                           : `Search for the official ${destInfo.name} e-Visa portal and apply at least 2–4 weeks before your trip.`}
                       </p>
                     </div>
@@ -635,7 +652,7 @@ export default function VisaCheckPage() {
                       <p className="text-sm font-semibold" style={{ color: sc.color }}>Available at Port of Entry</p>
                       <p className="text-xs text-muted-foreground mt-1">
                         {destReq
-                          ? `Pay ${destReq.fee} at the ${destInfo.name} immigration counter on arrival. Max stay: ${destReq.maxStay} days.`
+                          ? `Visa fee: ${feeText}, paid at the ${destInfo.name} immigration counter on arrival. Max stay: ${stayText}.`
                           : `Bring sufficient funds, a return ticket, and passport photos. Check the official ${destInfo.name} immigration website for fees.`}
                       </p>
                     </div>
@@ -653,7 +670,7 @@ export default function VisaCheckPage() {
                         <p className="text-sm font-semibold" style={{ color: sc.color }}>Apply at Nearest Embassy or VFS Global</p>
                         <p className="text-xs text-muted-foreground mt-1">
                           {destReq
-                            ? `Contact the ${destInfo.name} embassy. Fee: ${destReq.fee}. Allow ${destReq.processingTime} for processing.`
+                            ? `Contact the ${destInfo.name} embassy. Fee: ${feeText}. Allow ${processingText} for processing.`
                             : `Contact the ${destInfo.name} embassy or a VFS Global service centre in your nearest city. Allow 3–6 weeks for processing.`}
                         </p>
                         <a
@@ -721,11 +738,11 @@ export default function VisaCheckPage() {
                       <p className="text-sm font-semibold" style={{ color: sc.color }}>No Visa Required</p>
                       <p className="text-xs text-muted-foreground mt-1">
                         {destReq
-                          ? `You may enter ${destInfo.name} freely with a valid ${originInfo.name} passport. Typical maximum stay: ${destReq.maxStay} days.`
+                          ? `You may enter ${destInfo.name} freely with a valid ${originInfo.name} passport. Maximum stay: ${stayText}.`
                           : `You may enter ${destInfo.name} freely. Check entry conditions for maximum stay duration.`}
                       </p>
                       {destReq?.notes && (
-                        <p className="text-xs text-muted-foreground mt-1 italic">{destReq.notes}</p>
+                        <p className="text-xs text-muted-foreground mt-1 italic">General note for all nationalities: {destReq.notes}</p>
                       )}
                     </div>
                   </div>

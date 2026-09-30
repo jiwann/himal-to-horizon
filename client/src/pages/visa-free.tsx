@@ -6,7 +6,7 @@ import { useLanguage } from "@/contexts/language-context";
 import type { TranslationKey } from "@/lib/i18n";
 import { ArrowUpRight, ShieldCheck, Info, Search } from "lucide-react";
 import { setSEO, resetSEO } from "@/lib/seo";
-import { buildVisaList, type PassportCategory, type PassportEntry } from "@/lib/passport-lookup";
+import { buildVisaList, getNepalOverride, feeCardLabel, type PassportCategory, type PassportEntry } from "@/lib/passport-lookup";
 
 const AMBER = "hsl(22 79% 75%)";
 
@@ -47,6 +47,7 @@ function cardStyle(): React.CSSProperties {
 function EntryCard({ entry }: { entry: PassportEntry }) {
   const [, setLocation] = useLocation();
   const { t } = useLanguage();
+  const override = getNepalOverride(entry.code);
   return (
     <button
       type="button"
@@ -59,10 +60,11 @@ function EntryCard({ entry }: { entry: PassportEntry }) {
       <div className="min-w-0 flex-1">
         <div className="text-sm font-bold text-white truncate">{entry.name}</div>
         <div className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
-          {entry.maxStay
-            ? `${t("visa.up_to" as TranslationKey)} ${entry.maxStay} ${t("visa.days_unit" as TranslationKey)}`
-            : t("visa.stay_varies" as TranslationKey)}
-          {entry.fee ? ` · ${entry.fee}` : ""}
+          {override?.stay
+            ?? (entry.maxStay
+              ? `${t("visa.up_to" as TranslationKey)} ${entry.maxStay} ${t("visa.days_unit" as TranslationKey)}`
+              : t("visa.stay_varies" as TranslationKey))}
+          {feeCardLabel(override?.fee ?? entry.fee) ? ` · ${feeCardLabel(override?.fee ?? entry.fee)}` : ""}
         </div>
       </div>
       <ArrowUpRight className="h-4 w-4 shrink-0" style={{ color: "rgba(255,255,255,0.35)" }} />

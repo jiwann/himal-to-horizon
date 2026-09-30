@@ -154,6 +154,10 @@ def main():
     print(f"Parsing data (columns: {header})…")
 
     requirements: dict[str, str] = {}
+    # Visa-free stay length in days, when the source gives one (numeric
+    # requirement values). Passport-specific, unlike the generic maxStay in
+    # destination-requirements.json.
+    stay_days: dict[str, int] = {}
     unmapped: set[str] = set()
 
     for row in reader:
@@ -176,6 +180,8 @@ def main():
         # AFG-BRA style key (3-letter fallback via iso2→iso3 is not needed;
         # UI layer uses alpha-2. The format "AF->BR" is used internally.)
         requirements[f"{passport_iso}->{dest_iso}"] = status
+        if requirement.isdigit():
+            stay_days[f"{passport_iso}->{dest_iso}"] = int(requirement)
 
     output = {
         "generated": datetime.datetime.utcnow().isoformat() + "Z",
@@ -183,6 +189,7 @@ def main():
         "license": "MIT",
         "count": len(requirements),
         "requirements": requirements,
+        "stayDays": stay_days,
     }
 
     os.makedirs(os.path.dirname(OUT_PATH), exist_ok=True)

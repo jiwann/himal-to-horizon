@@ -6,7 +6,7 @@ import { useLanguage } from "@/contexts/language-context";
 import type { TranslationKey } from "@/lib/i18n";
 import { ArrowUpRight, ShieldCheck, Info, Search } from "lucide-react";
 import { setSEO, resetSEO } from "@/lib/seo";
-import { buildVisaList, type PassportEntry } from "@/lib/passport-lookup";
+import { buildVisaList, feeCardLabel, type PassportEntry } from "@/lib/passport-lookup";
 
 const AMBER = "hsl(22 79% 75%)";
 const BLUE = "hsl(205 80% 68%)";
@@ -37,7 +37,7 @@ function EntryCard({ entry }: { entry: PassportEntry }) {
           {entry.maxStay
             ? `${t("visa.up_to" as TranslationKey)} ${entry.maxStay} ${t("visa.days_unit" as TranslationKey)}`
             : t("visa.stay_varies" as TranslationKey)}
-          {entry.fee ? ` · ${entry.fee}` : ""}
+          {entry.fee ? ` · ${feeCardLabel(entry.fee)}` : ""}
           {entry.processingTime ? ` · ${entry.processingTime}` : ""}
         </div>
       </div>

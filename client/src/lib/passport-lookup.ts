@@ -107,12 +107,59 @@ export type PassportEntry = {
   processingTime?: string;
 };
 
+// Visa-free stay length in days for a specific passport -> destination pair,
+// straight from the passport-index dataset. Prefer this over the generic
+// maxStay in destination-requirements.json, which isn't passport-specific.
+export function getStayDays(passport: string, destination: string): number | undefined {
+  return ((passportIndex as any).stayDays as Record<string, number> | undefined)?.[`${passport}->${destination}`];
+}
+
+// Plain-language fee text for a destination at a given access level.
+// destination-requirements.json holds one generic fee per destination, so
+// values like "Free / $50 USD" mean "free for exempt nationalities, $50 for
+// everyone else" — confusing on a page that's already about one passport.
+// Visa-free entries have no visa fee at all; for everything else a
+// "Free / X" value collapses to X, the part that applies to a traveller who
+// isn't visa-exempt.
+export function describeFee(status: string, fee: string | undefined): string | undefined {
+  if (status === "visa_free") return "No visa fee";
+  if (!fee) return undefined;
+  const split = fee.match(/^free\s*\/\s*(.+)$/i);
+  if (split) return split[1];
+  return fee;
+}
+
+// Destination-specific facts for Nepali passport holders that the generic
+// datasets can't express.
+const NP_OVERRIDES: Record<string, { stay?: string; fee?: string }> = {
+  // 1950 Indo-Nepal Treaty: open border, no visa or time limit.
+  IN: { stay: "No time limit (open border)", fee: "No visa needed" },
+};
+
+export function getNepalOverride(destination: string) {
+  return NP_OVERRIDES[destination];
+}
+
+// Short fee phrase for list cards, where the fee sits next to the stay
+// length with no column heading to explain it.
+export function feeCardLabel(fee: string | undefined): string | undefined {
+  if (!fee) return undefined;
+  if (fee === "No visa fee" || fee === "No visa needed") return fee;
+  if (/^free$/i.test(fee)) return "Free visa";
+  return `Visa fee ${fee}`;
+}
+
+const listCache = new Map<PassportCategory, PassportEntry[]>();
+
 // Builds the list of destinations at a given access level for a Nepali
 // passport, from the open-source passport-index dataset already bundled
 // with the app (see passport-index.json's own "source" field), enriched
-// with the generic per-destination fee/maxStay/processingTime reference
-// data in destination-requirements.json where available.
+// with the generic per-destination fee/processingTime reference data in
+// destination-requirements.json where available. Cached per category:
+// the scan covers ~40k pairs and the data never changes at runtime.
 export function buildVisaList(category: PassportCategory): PassportEntry[] {
+  const cached = listCache.get(category);
+  if (cached) return cached;
   const reqs = (passportIndex as any).requirements as Record<string, string>;
   const dests = (destRequirements as any).destinations as Record<
     string,
@@ -130,10 +177,14 @@ export function buildVisaList(category: PassportCategory): PassportEntry[] {
       code,
       name: info.name,
       flag: info.flag,
-      maxStay: dest?.maxStay,
-      fee: dest?.fee,
+      // Visa-free stays come from the passport-specific dataset only; the
+      // generic figure is often another nationality's allowance.
+      maxStay: category === "visa_free" ? getStayDays("NP", code) : dest?.maxStay,
+      fee: describeFee(category, dest?.fee),
       processingTime: dest?.processingTime,
     });
   }
-  return out.sort((a, b) => a.name.localeCompare(b.name));
+  out.sort((a, b) => a.name.localeCompare(b.name));
+  listCache.set(category, out);
+  return out;
 }
