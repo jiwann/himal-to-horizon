@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useRef, useState } from "react";
-import { useLocation, useParams } from "wouter";
+import { useLocation, useParams, useSearch } from "wouter";
 import { useMutation, useQuery } from "@tanstack/react-query";
 import { Loader2, ImagePlus, Star, X, Search, BookOpen, MapPin, Stamp } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -42,7 +42,13 @@ export default function CommunityNewPage() {
   });
   const isAdmin = !!adminMe?.authenticated;
 
-  const [type, setType] = useState<CommunityPostType>("story");
+  // /community/new?type=visa_experience (from the community feed's Share
+  // button) starts the form on that post type instead of Story.
+  const search = useSearch();
+  const [type, setType] = useState<CommunityPostType>(() => {
+    const requested = new URLSearchParams(search).get("type");
+    return requested === "recommendation" || requested === "visa_experience" ? requested : "story";
+  });
   const [title, setTitle] = useState("");
   const [countryCode, setCountryCode] = useState("");
   const [countryQuery, setCountryQuery] = useState("");
