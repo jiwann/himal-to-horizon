@@ -105,18 +105,13 @@ passport.use(
 
 // Google OAuth strategy (only if credentials are provided)
 if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
-  let callbackURL: string;
-  if (process.env.OAUTH_CALLBACK_URL) {
-    // Explicit override — works on any host (Vercel, Railway, Render, Replit, etc.)
-    callbackURL = process.env.OAUTH_CALLBACK_URL;
-  } else if (process.env.NODE_ENV === "production") {
-    callbackURL = `${process.env.APP_URL || "https://himaltohorizon.com"}/api/auth/google/callback`;
-  } else if (process.env.REPLIT_DOMAINS) {
-    // In Replit dev environment use the public dev domain (HTTPS required by Google)
-    callbackURL = `https://${process.env.REPLIT_DOMAINS}/api/auth/google/callback`;
-  } else {
-    callbackURL = `http://localhost:${process.env.PORT || 5000}/api/auth/google/callback`;
-  }
+  // By default the callback is relative, so passport resolves it against the
+  // host the request arrived on (honouring X-Forwarded-* via "trust proxy").
+  // Login started on himaltohorizon.com returns there; login started on
+  // *.onrender.com returns there. Each host's /api/auth/google/callback must
+  // be listed under "Authorized redirect URIs" in Google Cloud Console.
+  // OAUTH_CALLBACK_URL forces a single absolute callback if ever needed.
+  const callbackURL = process.env.OAUTH_CALLBACK_URL || "/api/auth/google/callback";
   console.log(`[google-oauth] Callback URL: ${callbackURL}`);
 
   passport.use(
@@ -125,6 +120,7 @@ if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
         clientID: process.env.GOOGLE_CLIENT_ID,
         clientSecret: process.env.GOOGLE_CLIENT_SECRET,
         callbackURL,
+        proxy: true,
       },
       async (_accessToken, _refreshToken, profile, done) => {
         try {

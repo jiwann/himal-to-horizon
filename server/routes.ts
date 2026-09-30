@@ -1281,13 +1281,7 @@ Data sourced from the Passport Index dataset (github.com/ilyankou/passport-index
         const isMismatch = msg.toLowerCase().includes("redirect_uri_mismatch") || msg.toLowerCase().includes("redirect uri");
         if (isMismatch) {
           const expectedURI = encodeURIComponent(
-            process.env.OAUTH_CALLBACK_URL
-              ? process.env.OAUTH_CALLBACK_URL
-              : process.env.NODE_ENV === "production"
-                ? `${process.env.APP_URL || "https://himaltohorizon.com"}/api/auth/google/callback`
-                : process.env.REPLIT_DOMAINS
-                  ? `https://${process.env.REPLIT_DOMAINS}/api/auth/google/callback`
-                  : `http://localhost:${process.env.PORT || 5000}/api/auth/google/callback`
+            process.env.OAUTH_CALLBACK_URL || `${req.protocol}://${req.get("host")}/api/auth/google/callback`
           );
           console.error(`[google-oauth] redirect_uri_mismatch — add this URI to Google Cloud Console: ${decodeURIComponent(expectedURI)}`);
           return res.redirect(`/?auth_error=redirect_uri_mismatch&uri=${expectedURI}`);
