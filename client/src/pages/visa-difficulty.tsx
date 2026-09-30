@@ -9,6 +9,7 @@ import {
   ArrowUpRight, ShieldCheck, FileText, Users, Languages, Clock, AlertTriangle, Info,
 } from "lucide-react";
 import { setSEO, resetSEO } from "@/lib/seo";
+import { difficultyQuery } from "@/lib/visa-queries";
 import visaData from "@/lib/visa-data.json";
 
 const AMBER = "hsl(22 79% 75%)";
@@ -136,12 +137,8 @@ export default function VisaDifficultyPage() {
   const { t } = useLanguage();
 
   const { data = [], isLoading, error } = useQuery<DifficultyEntry[]>({
-    queryKey: ["/api/visa/NP/difficulty"],
-    queryFn: async () => {
-      const r = await fetch("/api/visa/NP/difficulty");
-      if (!r.ok) throw new Error(`Failed to load difficulty ranking (${r.status})`);
-      return r.json();
-    },
+    queryKey: difficultyQuery.queryKey,
+    queryFn: difficultyQuery.queryFn as () => Promise<DifficultyEntry[]>,
   });
 
   useEffect(() => {

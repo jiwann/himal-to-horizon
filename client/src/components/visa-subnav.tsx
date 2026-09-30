@@ -1,4 +1,7 @@
+import { useEffect } from "react";
 import { useLocation } from "wouter";
+import { queryClient } from "@/lib/queryClient";
+import { difficultyQuery } from "@/lib/visa-queries";
 import { useLanguage } from "@/contexts/language-context";
 import type { TranslationKey } from "@/lib/i18n";
 
@@ -18,6 +21,12 @@ const SUB_TABS: { id: SubTabId; labelKey: TranslationKey; path: string }[] = [
 export function VisaSubNav({ active }: { active: SubTabId }) {
   const [, setLocation] = useLocation();
   const { t } = useLanguage();
+
+  // Warm the only sub-tab that needs a server round trip, so switching to
+  // it doesn't wait on the network (noticeable on Render's free tier).
+  useEffect(() => {
+    queryClient.prefetchQuery(difficultyQuery);
+  }, []);
 
   return (
     <div
