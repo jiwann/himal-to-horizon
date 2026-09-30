@@ -1,0 +1,5 @@
+- [Dual auth model](dual-auth-model.md) — Passport user auth and admin session auth are separate; admin-reachable routes must not gate on requireAuth alone.
+- [Express 5 wildcard routes](express5-routing.md) — use `/path/*name`, not `/path/:name(*)`, or the server crashes at boot on path-to-regexp v8.
+- [Object storage ACL safety](object-storage-acl.md) — enforce ACL on `/objects/*` reads AND guard client-supplied ACL writes against hijacking another user's object.
+- [Klook affiliate link](klook-affiliate-link.md) — Klook cards must link to `/go/klook` (homepage only); tp.media `p=5023` deeplinks 404, no Klook sub-page deeplinking.
+- [Community post translation](community-translation.md) — on-demand per-post translate; provider order Google→Gemini→free MyMemory (no key); byte-aware chunking, quota→503.

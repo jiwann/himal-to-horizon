@@ -1,0 +1,185 @@
+{
+  "updated": "2026-03-12",
+  "aviasales_fallback": "https://tpk.mx/gCtH7LX7",
+  "partners": [
+    {
+      "id": "kiwi",
+      "name": "Kiwi.com",
+      "url": "/go/kiwi",
+      "category": "flights",
+      "regions": ["global"],
+      "status": "active",
+      "note": "Best for Horizon Hop™ self-transfer routes"
+    },
+    {
+      "id": "aviasales",
+      "name": "Aviasales",
+      "url": "/go/aviasales",
+      "category": "flights",
+      "regions": ["global"],
+      "status": "active",
+      "note": "Regional and low-cost carrier price intelligence"
+    },
+    {
+      "id": "cheapoair",
+      "name": "CheapOair",
+      "url": "/go/cheapoair",
+      "category": "flights",
+      "regions": ["americas"],
+      "status": "active",
+      "note": "Last-minute domestic deals"
+    },
+    {
+      "id": "trip",
+      "name": "Trip.com",
+      "url": "/go/trip",
+      "category": "flights",
+      "regions": ["asia", "global"],
+      "status": "active"
+    },
+    {
+      "id": "expedia",
+      "name": "Expedia",
+      "url": "/go/expedia",
+      "category": "flights",
+      "regions": ["americas", "europe", "global"],
+      "status": "active"
+    },
+    {
+      "id": "agoda",
+      "name": "Hotels.com",
+      "url": "/go/agoda",
+      "category": "hotels",
+      "regions": ["global"],
+      "status": "active"
+    },
+    {
+      "id": "agoda-search",
+      "name": "Agoda",
+      "url": "/go/agoda-search",
+      "category": "hotels",
+      "regions": ["asia"],
+      "status": "active"
+    },
+    {
+      "id": "hostelworld",
+      "name": "Hostelworld",
+      "url": "/go/hostelworld",
+      "category": "hotels",
+      "regions": ["global"],
+      "status": "active",
+      "note": "Budget travellers and hostels"
+    },
+    {
+      "id": "hotels",
+      "name": "Hotels.com",
+      "url": "/go/hotels",
+      "category": "hotels",
+      "regions": ["global"],
+      "status": "active"
+    },
+    {
+      "id": "localrent",
+      "name": "Localrent",
+      "url": "/go/localrent",
+      "category": "cars",
+      "regions": ["global"],
+      "status": "active"
+    },
+    {
+      "id": "searadar",
+      "name": "SeaRadar",
+      "url": "/go/searadar",
+      "category": "cars",
+      "regions": ["global"],
+      "status": "active",
+      "note": "Boat and watercraft rentals"
+    },
+    {
+      "id": "ekta",
+      "name": "EKTA Travel Insurance",
+      "url": "/go/ekta",
+      "category": "insurance",
+      "regions": ["global"],
+      "status": "active",
+      "note": "Always-on insurance — shown on all result pages"
+    },
+    {
+      "id": "visitorscoverage",
+      "name": "VisitorsCoverage",
+      "url": "/go/visitorscoverage",
+      "category": "insurance",
+      "regions": ["global"],
+      "status": "active"
+    },
+    {
+      "id": "klook",
+      "name": "Klook",
+      "url": "/go/klook",
+      "category": "activities",
+      "regions": ["asia", "global"],
+      "status": "active"
+    },
+    {
+      "id": "viator",
+      "name": "Klook",
+      "url": "/go/viator",
+      "category": "activities",
+      "regions": ["global"],
+      "status": "active",
+      "note": "Routed via Klook through Travelpayouts"
+    },
+    {
+      "id": "tiqets",
+      "name": "Tiqets",
+      "url": "/go/tiqets",
+      "category": "activities",
+      "regions": ["europe", "global"],
+      "status": "active",
+      "note": "Museum and attraction tickets"
+    },
+    {
+      "id": "wegotrip",
+      "name": "WeGoTrip",
+      "url": "/go/wegotrip",
+      "category": "activities",
+      "regions": ["global"],
+      "status": "active"
+    },
+    {
+      "id": "tripadvisor",
+      "name": "TripAdvisor",
+      "url": "/go/tripadvisor",
+      "category": "activities",
+      "regions": ["global"],
+      "status": "active"
+    },
+    {
+      "id": "12go",
+      "name": "12Go Asia",
+      "url": "/go/12go",
+      "category": "transport",
+      "regions": ["southeast_asia"],
+      "status": "active",
+      "note": "SEA-specific — trains, buses, ferries"
+    },
+    {
+      "id": "omio",
+      "name": "Omio",
+      "url": "/go/omio",
+      "category": "transport",
+      "regions": ["europe"],
+      "status": "active",
+      "note": "European rail and bus"
+    },
+    {
+      "id": "airalo",
+      "name": "Airalo eSIM",
+      "url": "/go/airalo",
+      "category": "connectivity",
+      "regions": ["global"],
+      "status": "active",
+      "note": "eSIM data in 200+ countries"
+    }
+  ]
+}

@@ -1,0 +1,454 @@
+{
+  "countries": [
+    { "code": "AF", "name": "Afghanistan", "flag": "🇦🇫" },
+    { "code": "AL", "name": "Albania", "flag": "🇦🇱" },
+    { "code": "DZ", "name": "Algeria", "flag": "🇩🇿" },
+    { "code": "AD", "name": "Andorra", "flag": "🇦🇩" },
+    { "code": "AO", "name": "Angola", "flag": "🇦🇴" },
+    { "code": "AG", "name": "Antigua & Barbuda", "flag": "🇦🇬" },
+    { "code": "AR", "name": "Argentina", "flag": "🇦🇷" },
+    { "code": "AM", "name": "Armenia", "flag": "🇦🇲" },
+    { "code": "AU", "name": "Australia", "flag": "🇦🇺" },
+    { "code": "AT", "name": "Austria", "flag": "🇦🇹" },
+    { "code": "AZ", "name": "Azerbaijan", "flag": "🇦🇿" },
+    { "code": "BS", "name": "Bahamas", "flag": "🇧🇸" },
+    { "code": "BH", "name": "Bahrain", "flag": "🇧🇭" },
+    { "code": "BD", "name": "Bangladesh", "flag": "🇧🇩" },
+    { "code": "BY", "name": "Belarus", "flag": "🇧🇾" },
+    { "code": "BE", "name": "Belgium", "flag": "🇧🇪" },
+    { "code": "BT", "name": "Bhutan", "flag": "🇧🇹" },
+    { "code": "BO", "name": "Bolivia", "flag": "🇧🇴" },
+    { "code": "BA", "name": "Bosnia & Herzegovina", "flag": "🇧🇦" },
+    { "code": "BW", "name": "Botswana", "flag": "🇧🇼" },
+    { "code": "BR", "name": "Brazil", "flag": "🇧🇷" },
+    { "code": "BN", "name": "Brunei", "flag": "🇧🇳" },
+    { "code": "BG", "name": "Bulgaria", "flag": "🇧🇬" },
+    { "code": "KH", "name": "Cambodia", "flag": "🇰🇭" },
+    { "code": "CM", "name": "Cameroon", "flag": "🇨🇲" },
+    { "code": "CA", "name": "Canada", "flag": "🇨🇦" },
+    { "code": "CL", "name": "Chile", "flag": "🇨🇱" },
+    { "code": "CN", "name": "China", "flag": "🇨🇳" },
+    { "code": "CO", "name": "Colombia", "flag": "🇨🇴" },
+    { "code": "CR", "name": "Costa Rica", "flag": "🇨🇷" },
+    { "code": "HR", "name": "Croatia", "flag": "🇭🇷" },
+    { "code": "CU", "name": "Cuba", "flag": "🇨🇺" },
+    { "code": "CY", "name": "Cyprus", "flag": "🇨🇾" },
+    { "code": "CZ", "name": "Czech Republic", "flag": "🇨🇿" },
+    { "code": "DK", "name": "Denmark", "flag": "🇩🇰" },
+    { "code": "DJ", "name": "Djibouti", "flag": "🇩🇯" },
+    { "code": "DO", "name": "Dominican Republic", "flag": "🇩🇴" },
+    { "code": "EC", "name": "Ecuador", "flag": "🇪🇨" },
+    { "code": "EG", "name": "Egypt", "flag": "🇪🇬" },
+    { "code": "ET", "name": "Ethiopia", "flag": "🇪🇹" },
+    { "code": "FJ", "name": "Fiji", "flag": "🇫🇯" },
+    { "code": "FI", "name": "Finland", "flag": "🇫🇮" },
+    { "code": "FR", "name": "France", "flag": "🇫🇷" },
+    { "code": "GE", "name": "Georgia", "flag": "🇬🇪" },
+    { "code": "DE", "name": "Germany", "flag": "🇩🇪" },
+    { "code": "GH", "name": "Ghana", "flag": "🇬🇭" },
+    { "code": "GR", "name": "Greece", "flag": "🇬🇷" },
+    { "code": "GT", "name": "Guatemala", "flag": "🇬🇹" },
+    { "code": "HK", "name": "Hong Kong SAR", "flag": "🇭🇰" },
+    { "code": "HU", "name": "Hungary", "flag": "🇭🇺" },
+    { "code": "IN", "name": "India", "flag": "🇮🇳" },
+    { "code": "ID", "name": "Indonesia", "flag": "🇮🇩" },
+    { "code": "IR", "name": "Iran", "flag": "🇮🇷" },
+    { "code": "IQ", "name": "Iraq", "flag": "🇮🇶" },
+    { "code": "IE", "name": "Ireland", "flag": "🇮🇪" },
+    { "code": "IL", "name": "Israel", "flag": "🇮🇱" },
+    { "code": "IT", "name": "Italy", "flag": "🇮🇹" },
+    { "code": "JM", "name": "Jamaica", "flag": "🇯🇲" },
+    { "code": "JP", "name": "Japan", "flag": "🇯🇵" },
+    { "code": "JO", "name": "Jordan", "flag": "🇯🇴" },
+    { "code": "KZ", "name": "Kazakhstan", "flag": "🇰🇿" },
+    { "code": "KE", "name": "Kenya", "flag": "🇰🇪" },
+    { "code": "KW", "name": "Kuwait", "flag": "🇰🇼" },
+    { "code": "KG", "name": "Kyrgyzstan", "flag": "🇰🇬" },
+    { "code": "LA", "name": "Laos", "flag": "🇱🇦" },
+    { "code": "LB", "name": "Lebanon", "flag": "🇱🇧" },
+    { "code": "LY", "name": "Libya", "flag": "🇱🇾" },
+    { "code": "MY", "name": "Malaysia", "flag": "🇲🇾" },
+    { "code": "MV", "name": "Maldives", "flag": "🇲🇻" },
+    { "code": "MT", "name": "Malta", "flag": "🇲🇹" },
+    { "code": "MX", "name": "Mexico", "flag": "🇲🇽" },
+    { "code": "MD", "name": "Moldova", "flag": "🇲🇩" },
+    { "code": "MN", "name": "Mongolia", "flag": "🇲🇳" },
+    { "code": "MA", "name": "Morocco", "flag": "🇲🇦" },
+    { "code": "MZ", "name": "Mozambique", "flag": "🇲🇿" },
+    { "code": "MM", "name": "Myanmar", "flag": "🇲🇲" },
+    { "code": "NA", "name": "Namibia", "flag": "🇳🇦" },
+    { "code": "NP", "name": "Nepal", "flag": "🇳🇵" },
+    { "code": "NL", "name": "Netherlands", "flag": "🇳🇱" },
+    { "code": "NZ", "name": "New Zealand", "flag": "🇳🇿" },
+    { "code": "NG", "name": "Nigeria", "flag": "🇳🇬" },
+    { "code": "NO", "name": "Norway", "flag": "🇳🇴" },
+    { "code": "OM", "name": "Oman", "flag": "🇴🇲" },
+    { "code": "PK", "name": "Pakistan", "flag": "🇵🇰" },
+    { "code": "PA", "name": "Panama", "flag": "🇵🇦" },
+    { "code": "PG", "name": "Papua New Guinea", "flag": "🇵🇬" },
+    { "code": "PY", "name": "Paraguay", "flag": "🇵🇾" },
+    { "code": "PE", "name": "Peru", "flag": "🇵🇪" },
+    { "code": "PH", "name": "Philippines", "flag": "🇵🇭" },
+    { "code": "PL", "name": "Poland", "flag": "🇵🇱" },
+    { "code": "PT", "name": "Portugal", "flag": "🇵🇹" },
+    { "code": "QA", "name": "Qatar", "flag": "🇶🇦" },
+    { "code": "RO", "name": "Romania", "flag": "🇷🇴" },
+    { "code": "RU", "name": "Russia", "flag": "🇷🇺" },
+    { "code": "SA", "name": "Saudi Arabia", "flag": "🇸🇦" },
+    { "code": "SN", "name": "Senegal", "flag": "🇸🇳" },
+    { "code": "RS", "name": "Serbia", "flag": "🇷🇸" },
+    { "code": "SG", "name": "Singapore", "flag": "🇸🇬" },
+    { "code": "ZA", "name": "South Africa", "flag": "🇿🇦" },
+    { "code": "KR", "name": "South Korea", "flag": "🇰🇷" },
+    { "code": "ES", "name": "Spain", "flag": "🇪🇸" },
+    { "code": "LK", "name": "Sri Lanka", "flag": "🇱🇰" },
+    { "code": "SE", "name": "Sweden", "flag": "🇸🇪" },
+    { "code": "CH", "name": "Switzerland", "flag": "🇨🇭" },
+    { "code": "TW", "name": "Taiwan", "flag": "🇹🇼" },
+    { "code": "TZ", "name": "Tanzania", "flag": "🇹🇿" },
+    { "code": "TH", "name": "Thailand", "flag": "🇹🇭" },
+    { "code": "TR", "name": "Turkey", "flag": "🇹🇷" },
+    { "code": "UG", "name": "Uganda", "flag": "🇺🇬" },
+    { "code": "UA", "name": "Ukraine", "flag": "🇺🇦" },
+    { "code": "AE", "name": "United Arab Emirates", "flag": "🇦🇪" },
+    { "code": "GB", "name": "United Kingdom", "flag": "🇬🇧" },
+    { "code": "US", "name": "United States", "flag": "🇺🇸" },
+    { "code": "UY", "name": "Uruguay", "flag": "🇺🇾" },
+    { "code": "UZ", "name": "Uzbekistan", "flag": "🇺🇿" },
+    { "code": "VN", "name": "Vietnam", "flag": "🇻🇳" },
+    { "code": "YE", "name": "Yemen", "flag": "🇾🇪" },
+    { "code": "ZM", "name": "Zambia", "flag": "🇿🇲" },
+    { "code": "ZW", "name": "Zimbabwe", "flag": "🇿🇼" }
+  ],
+  "requirements": {
+    "NP->BR": {
+      "status": "Sticker Visa Required",
+      "statusType": "sticker_visa",
+      "processingTime": "15–20 Business Days",
+      "fee": "No consular fee (service charges may apply at VFS)",
+      "applyOnline": { "available": false },
+      "applyVFS": {
+        "available": true,
+        "url": "https://www.vfsglobal.com/brazil/india/"
+      },
+      "officialUrl": "https://www.gov.br/mre/pt-br/assuntos/portal-consular",
+      "notes": "Nepali passport holders require a sticker visa to enter Brazil for tourism. Brazil does not maintain a diplomatic mission in Nepal. Applications must be submitted at the Brazilian Embassy in New Delhi, India, or through VFS Global at their India service centres.",
+      "embassyInOrigin": false,
+      "nearestEmbassy": {
+        "city": "New Delhi",
+        "country": "India",
+        "address": "8, Aurangzeb Road, New Delhi 110011, India",
+        "mapsUrl": "https://www.google.com/maps/search/Brazilian+Embassy+8+Aurangzeb+Road+New+Delhi+India"
+      },
+      "additionalConsulates": ["Mumbai", "Kolkata", "Chennai"]
+    },
+    "IN->US": {
+      "status": "B1/B2 Tourist & Business Visa",
+      "statusType": "sticker_visa",
+      "processingTime": "Highly variable — 400–900+ days wait times reported",
+      "fee": "USD $185 (non-refundable MRV fee)",
+      "applyOnline": {
+        "available": true,
+        "url": "https://ceac.state.gov/genniv/"
+      },
+      "applyVFS": { "available": false },
+      "officialUrl": "https://in.usembassy.gov/visas/",
+      "notes": "Indian citizens require a B1 (business) or B2 (tourist) visa. Interview wait times at US Embassies in India are currently very long. Apply well in advance. Biometric appointment required.",
+      "embassyInOrigin": true,
+      "nearestEmbassy": {
+        "city": "New Delhi",
+        "country": "India",
+        "address": "Shanti Path, Chanakyapuri, New Delhi 110021, India",
+        "mapsUrl": "https://www.google.com/maps/search/US+Embassy+Shanti+Path+New+Delhi"
+      },
+      "additionalConsulates": ["Mumbai", "Kolkata", "Chennai", "Hyderabad"]
+    },
+    "IN->GB": {
+      "status": "Standard Visitor Visa Required",
+      "statusType": "sticker_visa",
+      "processingTime": "3–8 Weeks (standard) · 5 Working Days (priority)",
+      "fee": "GBP £115 (standard) · GBP £500 (priority)",
+      "applyOnline": {
+        "available": true,
+        "url": "https://www.gov.uk/standard-visitor-visa"
+      },
+      "applyVFS": {
+        "available": true,
+        "url": "https://www.vfsglobal.co.uk/en/ind/index.html"
+      },
+      "officialUrl": "https://www.gov.uk/standard-visitor-visa",
+      "notes": "Indian citizens need a Standard Visitor Visa for the UK. Apply online via the UK Visas and Immigration portal. Biometrics enrolled at a VFS Global centre in India. Funds evidence and accommodation proof required.",
+      "embassyInOrigin": true,
+      "nearestEmbassy": {
+        "city": "New Delhi",
+        "country": "India",
+        "address": "Shantipath, Chanakyapuri, New Delhi 110021, India",
+        "mapsUrl": "https://www.google.com/maps/search/British+High+Commission+New+Delhi"
+      },
+      "additionalConsulates": ["Mumbai", "Kolkata", "Chennai", "Hyderabad", "Ahmedabad"]
+    },
+    "IN->AE": {
+      "status": "Visa on Arrival",
+      "statusType": "visa_on_arrival",
+      "processingTime": "Immediate (on arrival at UAE airports)",
+      "fee": "Free (30-day Visa on Arrival for Indian passport holders)",
+      "applyOnline": {
+        "available": true,
+        "url": "https://icp.gov.ae/en/services/visaservices/"
+      },
+      "applyVFS": { "available": false },
+      "officialUrl": "https://u.ae/en/information-and-services/visa-and-emirates-id/do-you-need-an-entry-permit-to-enter-the-uae",
+      "notes": "Indian passport holders receive a free 30-day Visa on Arrival at UAE airports (Dubai, Abu Dhabi, Sharjah, etc.). A 90-day e-Visa is also available online before travel. Return ticket and sufficient funds required.",
+      "embassyInOrigin": true,
+      "nearestEmbassy": {
+        "city": "New Delhi",
+        "country": "India",
+        "address": "EP-32, Dr. S. Radhakrishnan Marg, Chanakyapuri, New Delhi 110021, India",
+        "mapsUrl": "https://www.google.com/maps/search/UAE+Embassy+New+Delhi+India"
+      },
+      "additionalConsulates": ["Mumbai", "Hyderabad", "Thiruvananthapuram"]
+    },
+    "IN->TH": {
+      "status": "e-Visa Available",
+      "statusType": "evisa",
+      "processingTime": "3–5 Business Days",
+      "fee": "THB 2,000 (~USD $55)",
+      "applyOnline": {
+        "available": true,
+        "url": "https://www.thaievisa.go.th/"
+      },
+      "applyVFS": { "available": false },
+      "officialUrl": "https://www.thaievisa.go.th/",
+      "notes": "Indian passport holders can apply for a Thailand Tourist e-Visa (TR) online. Single entry, valid 90 days from issue, stay up to 60 days. Apply at least 10 days before travel. Note: visa-on-arrival is also available at airports for a higher fee.",
+      "embassyInOrigin": true,
+      "nearestEmbassy": {
+        "city": "New Delhi",
+        "country": "India",
+        "address": "56N, Nyaya Marg, Chanakyapuri, New Delhi 110021, India",
+        "mapsUrl": "https://www.google.com/maps/search/Royal+Thai+Embassy+New+Delhi"
+      },
+      "additionalConsulates": ["Mumbai", "Kolkata", "Chennai"]
+    },
+    "NP->IN": {
+      "status": "Visa Free Entry",
+      "statusType": "visa_free",
+      "processingTime": "Immediate",
+      "fee": "Free",
+      "applyOnline": { "available": false },
+      "applyVFS": { "available": false },
+      "officialUrl": "https://www.mea.gov.in/",
+      "notes": "Nepali citizens enjoy visa-free access to India under the 1950 Treaty of Peace and Friendship. No visa, passport, or immigration formality required. A valid Nepali citizenship certificate or passport is sufficient for entry.",
+      "embassyInOrigin": true,
+      "nearestEmbassy": null,
+      "additionalConsulates": []
+    },
+    "NP->AE": {
+      "status": "Visa on Arrival",
+      "statusType": "visa_on_arrival",
+      "processingTime": "Immediate (on arrival)",
+      "fee": "AED 100–200 (~USD $27–$54)",
+      "applyOnline": {
+        "available": true,
+        "url": "https://icp.gov.ae/en/services/visaservices/"
+      },
+      "applyVFS": { "available": false },
+      "officialUrl": "https://u.ae/en/information-and-services/visa-and-emirates-id/do-you-need-an-entry-permit-to-enter-the-uae",
+      "notes": "Nepali passport holders can obtain a 30-day Visa on Arrival at UAE airports. Pre-arranged e-Visa is recommended to avoid queues. Return ticket, hotel booking, and sufficient funds required.",
+      "embassyInOrigin": true,
+      "nearestEmbassy": {
+        "city": "Kathmandu",
+        "country": "Nepal",
+        "address": "Maharajgunj, Kathmandu, Nepal",
+        "mapsUrl": "https://www.google.com/maps/search/UAE+Embassy+Kathmandu+Nepal"
+      },
+      "additionalConsulates": []
+    },
+    "US->NP": {
+      "status": "Visa on Arrival",
+      "statusType": "visa_on_arrival",
+      "processingTime": "15–30 Minutes (on arrival at TIA)",
+      "fee": "USD $30 (15 days) · USD $50 (30 days) · USD $125 (90 days)",
+      "applyOnline": {
+        "available": true,
+        "url": "https://nepaliport.immigration.gov.np/"
+      },
+      "applyVFS": { "available": false },
+      "officialUrl": "https://immigration.gov.np/",
+      "notes": "US passport holders can obtain a tourist visa on arrival at Tribhuvan International Airport (KTM) or at most land border crossings. Payment accepted in USD, EUR, and GBP. Passport must be valid for at least 6 months. Online pre-arrival registration is also available.",
+      "embassyInOrigin": true,
+      "nearestEmbassy": {
+        "city": "Washington D.C.",
+        "country": "United States",
+        "address": "2131 Leroy Place NW, Washington, D.C. 20008, USA",
+        "mapsUrl": "https://www.google.com/maps/search/Embassy+of+Nepal+Washington+DC"
+      },
+      "additionalConsulates": ["New York", "San Francisco", "Chicago", "Los Angeles"]
+    },
+    "GB->NP": {
+      "status": "Visa on Arrival",
+      "statusType": "visa_on_arrival",
+      "processingTime": "15–30 Minutes (on arrival at TIA)",
+      "fee": "USD $30 (15 days) · USD $50 (30 days) · USD $125 (90 days)",
+      "applyOnline": {
+        "available": true,
+        "url": "https://nepaliport.immigration.gov.np/"
+      },
+      "applyVFS": { "available": false },
+      "officialUrl": "https://immigration.gov.np/",
+      "notes": "UK passport holders receive a tourist visa on arrival at Tribhuvan International Airport. Fees payable in USD or GBP. Passport validity of 6+ months required. Visa on arrival available at most designated ports of entry.",
+      "embassyInOrigin": true,
+      "nearestEmbassy": {
+        "city": "London",
+        "country": "United Kingdom",
+        "address": "12A Kensington Palace Gardens, London W8 4QU, United Kingdom",
+        "mapsUrl": "https://www.google.com/maps/search/Embassy+of+Nepal+London"
+      },
+      "additionalConsulates": []
+    },
+    "AU->NP": {
+      "status": "Visa on Arrival",
+      "statusType": "visa_on_arrival",
+      "processingTime": "15–30 Minutes (on arrival at TIA)",
+      "fee": "USD $30 (15 days) · USD $50 (30 days) · USD $125 (90 days)",
+      "applyOnline": {
+        "available": true,
+        "url": "https://nepaliport.immigration.gov.np/"
+      },
+      "applyVFS": { "available": false },
+      "officialUrl": "https://immigration.gov.np/",
+      "notes": "Australian passport holders can get a tourist visa on arrival at Tribhuvan International Airport. Payment in USD or AUD. Valid passport (6+ months) required. Pre-arrival online registration is recommended to speed up processing.",
+      "embassyInOrigin": true,
+      "nearestEmbassy": {
+        "city": "Canberra",
+        "country": "Australia",
+        "address": "24 Culgoa Circuit, O'Malley ACT 2606, Canberra, Australia",
+        "mapsUrl": "https://www.google.com/maps/search/Embassy+of+Nepal+Canberra+Australia"
+      },
+      "additionalConsulates": ["Sydney"]
+    },
+    "IN->SG": {
+      "status": "e-Visa Available",
+      "statusType": "evisa",
+      "processingTime": "1–3 Business Days",
+      "fee": "SGD $30 (~USD $22) — ICA processing fee",
+      "applyOnline": {
+        "available": true,
+        "url": "https://eservices.ica.gov.sg/esvclandingpage/save"
+      },
+      "applyVFS": { "available": false },
+      "officialUrl": "https://www.ica.gov.sg/enter-transit-depart/entering-singapore",
+      "notes": "Indian passport holders can apply for a Singapore e-Visa (SAVE) online. The visa is typically approved within 1–3 days. Single or multiple entry options available. Valid for 30 days stay.",
+      "embassyInOrigin": true,
+      "nearestEmbassy": {
+        "city": "New Delhi",
+        "country": "India",
+        "address": "E-6 Chandragupta Marg, Chanakyapuri, New Delhi 110021, India",
+        "mapsUrl": "https://www.google.com/maps/search/Singapore+High+Commission+New+Delhi"
+      },
+      "additionalConsulates": ["Mumbai", "Chennai"]
+    },
+    "US->GB": {
+      "status": "Visa Free — Up to 6 Months",
+      "statusType": "visa_free",
+      "processingTime": "Immediate",
+      "fee": "Free",
+      "applyOnline": { "available": false },
+      "applyVFS": { "available": false },
+      "officialUrl": "https://www.gov.uk/check-uk-visa",
+      "notes": "US passport holders can visit the United Kingdom visa-free for up to 6 months for tourism or business. No advance application needed. An Electronic Travel Authorisation (ETA) is required from January 2025. Apply at eta.homeoffice.gov.uk.",
+      "embassyInOrigin": true,
+      "nearestEmbassy": null,
+      "additionalConsulates": []
+    },
+    "PK->GB": {
+      "status": "Standard Visitor Visa Required",
+      "statusType": "sticker_visa",
+      "processingTime": "3–8 Weeks (standard) · 5 Working Days (priority)",
+      "fee": "GBP £115 (standard) · GBP £500 (priority)",
+      "applyOnline": {
+        "available": true,
+        "url": "https://www.gov.uk/standard-visitor-visa"
+      },
+      "applyVFS": {
+        "available": true,
+        "url": "https://www.vfsglobal.co.uk/en/pak/index.html"
+      },
+      "officialUrl": "https://www.gov.uk/standard-visitor-visa",
+      "notes": "Pakistani passport holders require a Standard Visitor Visa for the UK. Apply online and attend a biometrics appointment at VFS Global in Pakistan. Financial evidence, ties to home country, and accommodation details required.",
+      "embassyInOrigin": true,
+      "nearestEmbassy": {
+        "city": "Islamabad",
+        "country": "Pakistan",
+        "address": "Diplomatic Enclave, Ramna 5, Islamabad, Pakistan",
+        "mapsUrl": "https://www.google.com/maps/search/British+High+Commission+Islamabad+Pakistan"
+      },
+      "additionalConsulates": ["Karachi"]
+    },
+    "LK->AE": {
+      "status": "Visa on Arrival",
+      "statusType": "visa_on_arrival",
+      "processingTime": "Immediate (on arrival)",
+      "fee": "AED 100 (~USD $27) for 30 days",
+      "applyOnline": {
+        "available": true,
+        "url": "https://icp.gov.ae/en/services/visaservices/"
+      },
+      "applyVFS": { "available": false },
+      "officialUrl": "https://u.ae/en/information-and-services/visa-and-emirates-id",
+      "notes": "Sri Lankan passport holders can obtain a 30-day Visa on Arrival at UAE airports. Pre-arranged e-Visa is also available. Return ticket, hotel confirmation, and funds evidence required on arrival.",
+      "embassyInOrigin": true,
+      "nearestEmbassy": {
+        "city": "Colombo",
+        "country": "Sri Lanka",
+        "address": "No. 25, Flower Road, Colombo 3, Sri Lanka",
+        "mapsUrl": "https://www.google.com/maps/search/UAE+Embassy+Colombo+Sri+Lanka"
+      },
+      "additionalConsulates": []
+    },
+    "BD->AE": {
+      "status": "Employment / Visit Visa Required",
+      "statusType": "sticker_visa",
+      "processingTime": "5–10 Business Days",
+      "fee": "AED 300–500 (~USD $82–$136)",
+      "applyOnline": {
+        "available": true,
+        "url": "https://icp.gov.ae/en/services/visaservices/"
+      },
+      "applyVFS": { "available": false },
+      "officialUrl": "https://u.ae/en/information-and-services/visa-and-emirates-id",
+      "notes": "Bangladeshi passport holders require a tourist or visit visa for UAE. Visas are typically sponsored by a UAE-based employer, hotel, or travel agency. Visit visa valid for 30 days, extendable once.",
+      "embassyInOrigin": true,
+      "nearestEmbassy": {
+        "city": "Dhaka",
+        "country": "Bangladesh",
+        "address": "Road 23, Block J, Banani, Dhaka 1213, Bangladesh",
+        "mapsUrl": "https://www.google.com/maps/search/UAE+Embassy+Dhaka+Bangladesh"
+      },
+      "additionalConsulates": []
+    },
+    "IN->CA": {
+      "status": "Temporary Resident Visa (TRV) Required",
+      "statusType": "sticker_visa",
+      "processingTime": "8–12 Weeks",
+      "fee": "CAD $100 (~USD $74)",
+      "applyOnline": {
+        "available": true,
+        "url": "https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada.html"
+      },
+      "applyVFS": {
+        "available": true,
+        "url": "https://www.vfsglobal.ca/canada/india/"
+      },
+      "officialUrl": "https://www.canada.ca/en/immigration-refugees-citizenship/services/visit-canada.html",
+      "notes": "Indian passport holders require a Temporary Resident Visa (tourist visa) to visit Canada. Apply online via IRCC or through VFS Global. Biometrics required. Processing times are currently 8–12 weeks.",
+      "embassyInOrigin": true,
+      "nearestEmbassy": {
+        "city": "New Delhi",
+        "country": "India",
+        "address": "7/8 Shantipath, Chanakyapuri, New Delhi 110021, India",
+        "mapsUrl": "https://www.google.com/maps/search/Canadian+High+Commission+New+Delhi"
+      },
+      "additionalConsulates": ["Mumbai", "Chandigarh", "Bengaluru", "Chennai"]
+    }
+  }
+}

@@ -1,0 +1,379 @@
+import { useState, useRef, useEffect } from "react";
+import { useLocation } from "wouter";
+import {
+  Plane, Globe, ShieldCheck, ChevronDown, Menu, X, User,
+  BedDouble, Car, BookOpen, FileText, Users,
+  ArrowRight, CheckCircle2,
+} from "lucide-react";
+import logoImg from "@assets/logo_1772143671966.png";
+import heroBg from "@assets/hero_mountain_sunrise.png";
+import { AuthModal } from "@/components/auth-modal";
+import { UserMenu } from "@/components/user-menu";
+import { useLanguage } from "@/contexts/language-context";
+import { useAuth } from "@/contexts/auth-context";
+import { LANGUAGE_LABELS, LANGUAGE_FLAGS } from "@/lib/i18n";
+import type { Language } from "@/lib/i18n";
+import { setSEO, resetSEO } from "@/lib/seo";
+
+export default function HomePage() {
+  const [, setLocation] = useLocation();
+  const { language, setLanguage, t } = useLanguage();
+  const [langOpen, setLangOpen] = useState(false);
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [authOpen, setAuthOpen] = useState(false);
+  const { user } = useAuth();
+  const langRef = useRef<HTMLDivElement>(null);
+  const offersRef = useRef<HTMLDivElement>(null);
+
+  useEffect(() => {
+    setSEO({
+      title: "Himal to Horizon — Visa Intelligence for Nepali Travelers",
+      description: "Step-by-step visa requirements, fees and official links for Nepali passport holders — verified and updated weekly. Plus flights, travel guides, insurance and a traveler community.",
+      path: "/",
+    });
+    return () => { resetSEO(); };
+  }, []);
+
+  useEffect(() => {
+    function handleClickOutside(e: MouseEvent) {
+      if (langRef.current && !langRef.current.contains(e.target as Node)) {
+        setLangOpen(false);
+      }
+    }
+    if (langOpen) {
+      document.addEventListener("mousedown", handleClickOutside);
+      return () => document.removeEventListener("mousedown", handleClickOutside);
+    }
+  }, [langOpen]);
+
+  function scrollToOffers() {
+    offersRef.current?.scrollIntoView({ behavior: "smooth", block: "start" });
+  }
+
+  return (
+    <div className="min-h-screen bg-background text-foreground">
+
+      {/* ── Hero ───────────────────────────────────────────────────────────── */}
+      <div
+        className="relative overflow-hidden"
+        style={{ minHeight: "560px" }}
+      >
+        <div
+          className="absolute inset-0"
+          style={{
+            backgroundImage: `url(${heroBg})`,
+            backgroundSize: "cover",
+            backgroundPosition: "center 28%",
+            filter: "brightness(1.22) saturate(1.15) contrast(1.03)",
+          }}
+        />
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(6,13,23,0.10) 0%, rgba(6,13,23,0.01) 18%, rgba(6,13,23,0.20) 55%, rgba(6,13,23,0.95) 100%)" }} />
+        {/* Vignette focused behind the headline so light text stays legible over bright snow, without darkening the whole photo */}
+        <div
+          className="absolute pointer-events-none"
+          style={{ top: "38%", left: "50%", transform: "translate(-50%, -50%)", width: "min(900px, 92vw)", height: "420px", background: "radial-gradient(ellipse at center, rgba(4,10,18,0.55) 0%, rgba(4,10,18,0.32) 45%, transparent 75%)" }}
+        />
+
+        {/* ── Nav ─────────────────────────────────────────────────────────── */}
+        <nav
+          className="relative z-20 flex items-center px-5 py-4 gap-2"
+          style={{
+            background: "linear-gradient(to bottom, rgba(6,13,23,0.55) 0%, rgba(6,13,23,0.28) 70%, transparent 100%)",
+            backdropFilter: "blur(6px)",
+          }}
+        >
+          <button
+            type="button"
+            data-testid="logo"
+            onClick={() => { setMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }}
+            className="flex items-center gap-2 group bg-transparent border-0 p-0 cursor-pointer shrink-0"
+          >
+            <img src={logoImg} alt="Himal to Horizon" className="w-10 h-10 rounded-full object-cover" />
+            <div
+              data-testid="logo-text"
+              className="leading-tight transition-colors duration-200"
+              style={{ fontFamily: "var(--font-serif)", color: "white", fontSize: "28px", fontWeight: 800 }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "hsl(22 79% 80%)")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
+            >
+              Himal to Horizon
+            </div>
+          </button>
+
+          <div className="hidden sm:flex items-center gap-2 ml-auto">
+            <div ref={langRef} className="relative">
+              <button type="button" data-testid="language-toggle"
+                onClick={() => setLangOpen((o) => !o)}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded text-sm font-semibold transition-colors"
+                style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)", color: "#FFFFFF" }}
+              >
+                <span>{LANGUAGE_FLAGS[language]}</span>
+                <span className="text-xs">{language.toUpperCase()}</span>
+                <ChevronDown className="h-3 w-3 opacity-60" />
+              </button>
+              {langOpen && (
+                <div className="absolute right-0 top-full mt-1.5 py-1 rounded-md shadow-xl z-50 min-w-[160px] max-h-72 overflow-y-auto" style={{ background: "#0f1a28", border: "1px solid rgba(255,255,255,0.1)", scrollbarWidth: "thin", scrollbarColor: "rgba(255,255,255,0.2) transparent" }}>
+                  {(Object.keys(LANGUAGE_LABELS) as Language[]).map((lang) => (
+                    <button key={lang} type="button" data-testid={`language-option-${lang}`}
+                      onClick={() => { setLanguage(lang); setLangOpen(false); }}
+                      className="w-full text-left px-4 py-2 text-sm flex items-center gap-2 transition-colors"
+                      style={{ color: language === lang ? "hsl(22 79% 75%)" : "rgba(255,255,255,0.8)", background: language === lang ? "hsl(22 79% 75% / 0.08)" : "transparent", fontWeight: language === lang ? 600 : 400 }}
+                    >
+                      <span>{LANGUAGE_FLAGS[lang]}</span><span>{LANGUAGE_LABELS[lang]}</span>
+                    </button>
+                  ))}
+                </div>
+              )}
+            </div>
+          </div>
+
+          <div className="hidden sm:flex items-center ml-1">
+            {user ? <UserMenu user={user} /> : (
+              <button type="button" data-testid="button-sign-in" onClick={() => setAuthOpen(true)}
+                className="flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-sm font-semibold transition-all"
+                style={{ background: "#F7B088", color: "hsl(211 60% 8%)" }}
+              >
+                <User className="w-3.5 h-3.5" />{t("auth.sign_in")}
+              </button>
+            )}
+          </div>
+
+          <button type="button" data-testid="mobile-menu-toggle"
+            onClick={() => { setMobileMenuOpen((o) => !o); setLangOpen(false); }}
+            className="sm:hidden ml-auto flex items-center justify-center w-9 h-9 rounded text-white/90"
+            style={{ background: "rgba(255,255,255,0.08)", border: "1px solid rgba(255,255,255,0.12)" }}
+          >
+            {mobileMenuOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+          </button>
+        </nav>
+
+        {/* Service Tabs */}
+        <div className="relative z-10 px-4 pt-1 pb-0.5">
+          <div className="flex gap-0 overflow-x-auto" style={{ scrollbarWidth: "none", background: "rgba(0,0,0,0.28)", backdropFilter: "blur(6px)" }} data-testid="service-tabs">
+            {[
+              { id: "tab-visa",      icon: <FileText className="h-4 w-4" />,   label: t("nav.visa_intelligence"),  path: "/visa-guides", primary: true },
+              { id: "tab-flights",   icon: <Plane className="h-4 w-4" />,      label: t("nav.flights"),            path: "/flights" },
+              { id: "tab-hotels",    icon: <BedDouble className="h-4 w-4" />,  label: t("nav.hotels"),             path: "/hotels" },
+              { id: "tab-cars",      icon: <Car className="h-4 w-4" />,        label: t("nav.cars"),               path: "/cars" },
+              { id: "tab-insurance", icon: <ShieldCheck className="h-4 w-4" />,label: t("nav.insurance"),          path: "/insurance" },
+              { id: "tab-blog",      icon: <BookOpen className="h-4 w-4" />,   label: t("nav.travel_blog"),        path: "/blog" },
+            ].map((tab) => (
+              <button key={tab.id} type="button" data-testid={tab.id} onClick={() => setLocation(tab.path)}
+                className="flex items-center gap-2 px-5 py-3 text-base font-bold whitespace-nowrap transition-all border-b-2 bg-transparent shrink-0"
+                style={{ color: tab.primary ? "#F7B088" : "rgba(255,255,255,0.75)", borderColor: tab.primary ? "#F7B088" : "transparent" }}
+                onMouseEnter={(e) => { if (!tab.primary) e.currentTarget.style.color = "#fff"; }}
+                onMouseLeave={(e) => { if (!tab.primary) e.currentTarget.style.color = "rgba(255,255,255,0.75)"; }}
+              >
+                {tab.icon}{tab.label}
+              </button>
+            ))}
+          </div>
+          <div style={{ height: "1px", background: "rgba(255,255,255,0.10)", marginTop: "-1px" }} />
+        </div>
+
+        {/* Mobile Menu Drawer */}
+        {mobileMenuOpen && (
+          <div className="relative z-40 sm:hidden px-5 py-4 space-y-4" style={{ background: "rgba(6,13,23,0.97)", borderBottom: "1px solid rgba(255,255,255,0.08)" }}>
+            <button type="button" data-testid="mobile-nav-visa" onClick={() => { setMobileMenuOpen(false); setLocation("/visa-guides"); }}
+              className="block w-full text-left text-white/80 text-sm font-medium py-2 hover:text-white transition-colors bg-transparent border-0"
+            >{t("home.mobile_visa")}</button>
+            <button type="button" data-testid="mobile-nav-blog" onClick={() => { setMobileMenuOpen(false); setLocation("/blog"); }}
+              className="block w-full text-left text-white/80 text-sm font-medium py-2 hover:text-white transition-colors bg-transparent border-0"
+            >{t("nav.travel_blog")}</button>
+            <button type="button" data-testid="mobile-nav-about" onClick={() => { setMobileMenuOpen(false); setLocation("/about"); }}
+              className="block w-full text-left text-white/80 text-sm font-medium py-2 hover:text-white transition-colors bg-transparent border-0"
+            >{t("nav.about")}</button>
+            {user ? (
+              <div className="flex items-center justify-between py-2 border-t" style={{ borderColor: "rgba(255,255,255,0.08)" }}>
+                <span className="text-sm text-white/80">{user.name ?? user.email}</span>
+              </div>
+            ) : (
+              <button type="button" data-testid="mobile-sign-in" onClick={() => { setMobileMenuOpen(false); setAuthOpen(true); }}
+                className="w-full py-2.5 rounded-xl text-sm font-bold" style={{ background: "#F7B088", color: "hsl(211 60% 8%)" }}
+              >{t("auth.sign_in")}</button>
+            )}
+            <div>
+              <p className="text-[10px] font-semibold uppercase tracking-widest text-white/40 mb-2">{t("nav.language")}</p>
+              <div className="grid grid-cols-2 gap-2">
+                {(Object.keys(LANGUAGE_LABELS) as Language[]).map((lang) => (
+                  <button key={lang} type="button" data-testid={`mobile-lang-${lang}`}
+                    onClick={() => { setLanguage(lang); setMobileMenuOpen(false); }}
+                    className="flex items-center gap-2 px-3 py-2 rounded text-sm transition-colors"
+                    style={{ color: language === lang ? "hsl(22 79% 75%)" : "rgba(255,255,255,0.75)", background: language === lang ? "hsl(22 79% 75% / 0.12)" : "rgba(255,255,255,0.05)", fontWeight: language === lang ? 600 : 400, border: language === lang ? "1px solid hsl(22 79% 75% / 0.3)" : "1px solid transparent" }}
+                  ><span>{LANGUAGE_FLAGS[lang]}</span><span>{LANGUAGE_LABELS[lang]}</span></button>
+                ))}
+              </div>
+            </div>
+          </div>
+        )}
+
+        {/* ── Hero headline ────────────────────────────────────────────────── */}
+        <div className="relative z-10 flex flex-col items-center text-center px-5 pt-16 pb-20">
+          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-5" style={{ background: "rgba(6,13,23,0.55)", border: "1px solid rgba(247,176,136,0.55)", backdropFilter: "blur(6px)", boxShadow: "0 2px 14px rgba(0,0,0,0.35)" }}>
+            <FileText className="h-3.5 w-3.5" style={{ color: "#F7B088" }} />
+            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#FFFFFF", textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}>{t("home.visa_hero_badge")}</span>
+          </div>
+          <h1
+            className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight max-w-3xl"
+            style={{ fontFamily: "var(--font-serif)", textShadow: "0 2px 6px rgba(0,0,0,0.85), 0 6px 28px rgba(0,0,0,0.65)" }}
+          >
+            {t("home.visa_hero_title_1")}<br />{t("home.visa_hero_title_2")}
+          </h1>
+          <p className="mt-5 text-base md:text-lg text-white/90 max-w-xl leading-relaxed" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.9), 0 3px 14px rgba(0,0,0,0.7)" }}>
+            {t("home.visa_hero_subtitle")}
+          </p>
+          <div className="flex flex-wrap gap-3 justify-center mt-8">
+            <button
+              type="button"
+              data-testid="hero-cta-visa"
+              onClick={() => setLocation("/visa-guides")}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all hover:opacity-90"
+              style={{ background: "#F7B088", color: "hsl(211 60% 8%)" }}
+            >
+              <FileText className="h-4 w-4" /> {t("home.visa_hero_cta_primary")} <ArrowRight className="h-4 w-4" />
+            </button>
+            <button
+              type="button"
+              data-testid="hero-cta-services"
+              onClick={scrollToOffers}
+              className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all"
+              style={{ background: "rgba(255,255,255,0.12)", color: "#fff", border: "1px solid rgba(255,255,255,0.25)", backdropFilter: "blur(4px)" }}
+            >
+              <Globe className="h-4 w-4" /> {t("home.visa_hero_cta_secondary")}
+            </button>
+          </div>
+          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-8 text-xs font-semibold text-white/70">
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5" style={{ color: "#F7B088" }} /> {t("home.trust_countries")}</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5" style={{ color: "#F7B088" }} /> {t("home.trust_sources")}</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5" style={{ color: "#F7B088" }} /> {t("home.trust_refresh")}</span>
+          </div>
+        </div>
+      </div>
+
+      {/* ── What We Offer ────────────────────────────────────────────────────── */}
+      <section ref={offersRef} className="px-4 pt-12 pb-16 max-w-5xl mx-auto w-full scroll-mt-4">
+        <div className="text-center mb-8">
+          <h2 className="text-2xl md:text-3xl font-extrabold" style={{ fontFamily: "var(--font-serif)" }}>{t("home.offer_title")}</h2>
+          <p className="text-sm md:text-base text-muted-foreground mt-2">{t("home.offer_subtitle")}</p>
+        </div>
+        <div className="grid gap-4 md:grid-cols-2">
+          {/* Visa Intelligence — featured, primary */}
+          <button
+            type="button"
+            data-testid="offer-visa"
+            onClick={() => setLocation("/visa-guides")}
+            className="md:col-span-2 text-left rounded-2xl p-6 transition-all hover:-translate-y-0.5"
+            style={{ background: "linear-gradient(135deg, rgba(247,176,136,0.14) 0%, rgba(247,176,136,0.04) 100%)", border: "1.5px solid rgba(247,176,136,0.55)" }}
+          >
+            <div className="flex items-start gap-4">
+              <div className="flex items-center justify-center w-12 h-12 rounded-xl shrink-0" style={{ background: "#F7B088" }}>
+                <FileText className="h-6 w-6" style={{ color: "hsl(211 60% 8%)" }} />
+              </div>
+              <div className="flex-1 min-w-0">
+                <h3 className="text-lg font-bold">{t("home.offer_visa_title")}</h3>
+                <p className="text-sm text-muted-foreground mt-1.5 max-w-2xl">{t("home.offer_visa_desc")}</p>
+                <span className="inline-flex items-center gap-1.5 text-sm font-bold mt-3" style={{ color: "#F7B088" }}>
+                  {t("home.offer_visa_cta")} <ArrowRight className="h-3.5 w-3.5" />
+                </span>
+              </div>
+            </div>
+          </button>
+
+          {/* Secondary services */}
+          {[
+            { id: "offer-flights",   icon: Plane,      title: t("home.offer_flights_title"),   desc: t("home.offer_flights_desc"),   cta: t("home.offer_flights_cta"),   path: "/flights" },
+            { id: "offer-guides",    icon: BookOpen,   title: t("home.offer_guides_title"),    desc: t("home.offer_guides_desc"),    cta: t("home.offer_guides_cta"),    path: "/blog" },
+            { id: "offer-insurance", icon: ShieldCheck,title: t("home.offer_insurance_title"), desc: t("home.offer_insurance_desc"), cta: t("home.offer_insurance_cta"), path: "/insurance" },
+            { id: "offer-community", icon: Users,      title: t("home.offer_community_title"),  desc: t("home.offer_community_desc"),  cta: t("home.offer_community_cta"),  path: "/community" },
+          ].map((offer) => (
+            <button
+              key={offer.id}
+              type="button"
+              data-testid={offer.id}
+              onClick={() => setLocation(offer.path)}
+              className="text-left rounded-2xl p-5 transition-all hover:-translate-y-0.5 border border-border/40 bg-card/50 hover:border-border/70"
+            >
+              <div className="flex items-center justify-center w-10 h-10 rounded-lg mb-3" style={{ background: "rgba(255,255,255,0.06)" }}>
+                <offer.icon className="h-5 w-5 text-muted-foreground" />
+              </div>
+              <h3 className="text-base font-bold">{offer.title}</h3>
+              <p className="text-sm text-muted-foreground mt-1.5">{offer.desc}</p>
+              <span className="inline-flex items-center gap-1.5 text-xs font-bold mt-3 text-muted-foreground">
+                {offer.cta} <ArrowRight className="h-3 w-3" />
+              </span>
+            </button>
+          ))}
+        </div>
+      </section>
+
+      {/* ── Footer ─────────────────────────────────────────────────────────── */}
+      <footer className="pt-10 pb-6 px-4 mt-6" style={{ borderTop: "1px solid rgba(247,176,136,0.4)" }}>
+        <div className="max-w-5xl mx-auto flex flex-col items-center text-center">
+
+          {/* Brand block */}
+          <button
+            type="button"
+            onClick={() => window.scrollTo({ top: 0, behavior: "smooth" })}
+            className="flex items-center gap-2 bg-transparent border-0 p-0 cursor-pointer"
+          >
+            <img src={logoImg} alt="Himal to Horizon" className="w-6 h-6 rounded-full object-cover" />
+            <span className="font-bold text-base transition-colors duration-200" style={{ fontFamily: "var(--font-serif)", color: "#FFFFFF" }}
+              onMouseEnter={(e) => (e.currentTarget.style.color = "#F7B088")}
+              onMouseLeave={(e) => (e.currentTarget.style.color = "#FFFFFF")}
+            >Himal to Horizon</span>
+          </button>
+          <p className="text-sm mt-2 max-w-md" style={{ color: "rgba(255,255,255,0.75)" }}>
+            Visa intelligence and travel guidance for Nepali travelers.
+          </p>
+
+          {/* Nav links — the part people actually use */}
+          <nav className="flex justify-center items-center gap-x-5 gap-y-2 flex-wrap text-sm font-semibold mt-6 pt-6 w-full max-w-xl" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+            {[
+              { label: t("footer.visa_guides"),   path: "/visa-guides" },
+              { label: t("footer.flights_link"),  path: "/flights" },
+              { label: t("footer.blog_link"),     path: "/blog" },
+              { label: t("nav.about"),            path: "/about" },
+            ].map((link) => (
+              <button key={link.path} type="button" onClick={() => setLocation(link.path)}
+                className="transition-colors bg-transparent border-0 p-0 cursor-pointer"
+                style={{ color: "rgba(255,255,255,0.85)" }}
+                onMouseEnter={(e) => (e.currentTarget.style.color = "#F7B088")}
+                onMouseLeave={(e) => (e.currentTarget.style.color = "rgba(255,255,255,0.85)")}
+                data-testid={`footer-${link.label.toLowerCase().replace(/\s+/g, "-")}`}
+              >{link.label}</button>
+            ))}
+          </nav>
+
+          {/* Legal / fine print — demoted, grouped, out of the way */}
+          <div className="mt-6 pt-5 w-full max-w-xl flex flex-col items-center gap-1.5" style={{ borderTop: "1px solid rgba(255,255,255,0.08)" }}>
+            <p className="text-xs" style={{ color: "rgba(255,255,255,0.45)" }}>
+              {t("footer.contact")}{" "}
+              <a href="mailto:hello@himaltohorizon.com" style={{ color: "rgba(255,255,255,0.6)" }}>hello@himaltohorizon.com</a>
+            </p>
+            <p className="text-[11px] leading-relaxed max-w-md" style={{ color: "rgba(255,255,255,0.35)" }}>
+              {t("footer.disclaimer")} · {t("footer.affiliate_notice")}
+            </p>
+            <div className="flex justify-center items-center gap-4 flex-wrap text-[11px] mt-1" style={{ color: "rgba(255,255,255,0.35)" }}>
+              {[
+                { label: t("footer.privacy"),   path: "/privacy" },
+                { label: t("footer.terms"),     path: "/terms" },
+                { label: t("footer.affiliate"), path: "/affiliate-disclosure" },
+              ].map((link) => (
+                <button key={link.path} type="button" onClick={() => setLocation(link.path)}
+                  className="hover:opacity-80 transition-opacity bg-transparent border-0 p-0 cursor-pointer text-[11px]"
+                  style={{ color: "rgba(255,255,255,0.35)" }}
+                  data-testid={`footer-${link.label.toLowerCase().replace(/\s+/g, "-")}`}
+                >{link.label}</button>
+              ))}
+            </div>
+            <p className="text-[11px] mt-1" style={{ color: "rgba(255,255,255,0.3)" }}>
+              © {new Date().getFullYear()} Himal to Horizon, a product of Synergy Soul LLC · himaltohorizon.com
+            </p>
+          </div>
+        </div>
+      </footer>
+
+      {authOpen && <AuthModal open={authOpen} onClose={() => setAuthOpen(false)} />}
+    </div>
+  );
+}
