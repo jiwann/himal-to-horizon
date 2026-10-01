@@ -10,6 +10,8 @@ import {
 } from "lucide-react";
 import { setSEO, resetSEO } from "@/lib/seo";
 import { difficultyQuery } from "@/lib/visa-queries";
+import { buildVisaList, type PassportEntry } from "@/lib/passport-lookup";
+import { VisaEntryMeta } from "@/components/visa-entry-meta";
 import visaData from "@/lib/visa-data.json";
 
 const AMBER = "hsl(22 79% 75%)";
@@ -29,7 +31,43 @@ type DifficultyEntry = {
   processingTime: string;
   fee: string;
   verified: boolean;
+  // Set for visa-free / visa-on-arrival countries that have no full guide
+  // (so no document/interview data to score) — shown with stay and fee.
+  quick?: PassportEntry;
 };
+
+// Order inside a tier: no application at all, then on arrival, then the rest.
+const STATUS_ORDER: Record<string, number> = { visa_free: 0, visa_on_arrival: 1 };
+
+// Visa-free and visa-on-arrival destinations need no application before
+// travel, so they're Easy by definition. The server ranking only covers
+// countries with a full guide; add the rest from the same Nepal-checked
+// lists the Visa-free tab uses.
+function quickEasyEntries(ranked: DifficultyEntry[]): DifficultyEntry[] {
+  const have = new Set(ranked.map((r) => r.countryCode));
+  const out: DifficultyEntry[] = [];
+  for (const status of ["visa_free", "visa_on_arrival"] as const) {
+    for (const e of buildVisaList(status)) {
+      if (have.has(e.code)) continue;
+      out.push({
+        countryCode: e.code,
+        countryName: e.name,
+        status,
+        score: STATUS_ORDER[status],
+        tier: "easy",
+        documentCount: 0,
+        requiresPoliceClearance: false,
+        requiresInterview: false,
+        requiresTranslation: false,
+        processingTime: "",
+        fee: e.fee ?? "",
+        verified: !e.unconfirmed,
+        quick: e,
+      });
+    }
+  }
+  return out;
+}
 
 const FLAG_BY_CODE: Record<string, string> = Object.fromEntries(
   (visaData as any).countries.map((c: { code: string; flag: string }) => [c.code, c.flag])
@@ -99,7 +137,7 @@ function Tag({ icon, label }: { icon: React.ReactNode; label: string }) {
 function CountryRow({ entry }: { entry: DifficultyEntry }) {
   const [, setLocation] = useLocation();
   const { t } = useLanguage();
-  const flag = FLAG_BY_CODE[entry.countryCode] ?? "🌐";
+  const flag = entry.quick?.flag ?? FLAG_BY_CODE[entry.countryCode] ?? "🌐";
   const statusKey = STATUS_KEYS[entry.status];
 
   return (
@@ -118,13 +156,13 @@ function CountryRow({ entry }: { entry: DifficultyEntry }) {
             {statusKey ? t(statusKey) : entry.status}
           </span>
         </div>
-        <div className="flex items-center gap-1.5 flex-wrap">
+        {entry.quick ? <VisaEntryMeta entry={entry.quick} /> : <div className="flex items-center gap-1.5 flex-wrap">
           <Tag icon={<FileText className="h-3 w-3" />} label={`${entry.documentCount} ${t("visa.documents_label" as TranslationKey)}`} />
           <Tag icon={<Clock className="h-3 w-3" />} label={entry.processingTime} />
           {entry.requiresPoliceClearance && <Tag icon={<ShieldCheck className="h-3 w-3" />} label={t("visa.tag_police" as TranslationKey)} />}
           {entry.requiresInterview && <Tag icon={<Users className="h-3 w-3" />} label={t("visa.tag_interview" as TranslationKey)} />}
           {entry.requiresTranslation && <Tag icon={<Languages className="h-3 w-3" />} label={t("visa.tag_translation" as TranslationKey)} />}
-        </div>
+        </div>}
       </div>
       <ArrowUpRight className="h-4 w-4 shrink-0" style={{ color: "rgba(255,255,255,0.35)" }} />
     </button>
@@ -150,14 +188,20 @@ export default function VisaDifficultyPage() {
     return () => resetSEO();
   }, []);
 
+  const all = useMemo(() => (data.length ? [...data, ...quickEasyEntries(data)] : data), [data]);
+
   const filtered = useMemo(
-    () => data.filter((d) => d.countryName.toLowerCase().includes(query.toLowerCase())),
-    [data, query]
+    () => all.filter((d) => d.countryName.toLowerCase().includes(query.toLowerCase())),
+    [all, query]
   );
 
   const byTier = useMemo(() => {
     const grouped: Record<DifficultyTier, DifficultyEntry[]> = { easy: [], moderate: [], hard: [], very_hard: [] };
     for (const entry of filtered) grouped[entry.tier].push(entry);
+    grouped.easy.sort((a, b) =>
+      (STATUS_ORDER[a.status] ?? 2) - (STATUS_ORDER[b.status] ?? 2)
+      || a.score - b.score
+      || a.countryName.localeCompare(b.countryName));
     return grouped;
   }, [filtered]);
 
