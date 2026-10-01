@@ -541,8 +541,8 @@
       },
       {
         "order": 2,
-        "title": "Submit your application",
-        "description": "Apply at the Embassy of the Republic of Korea in Kathmandu (or an authorized visa agency, if the embassy directs applicants there for your visa type)."
+        "title": "Book an appointment and submit your application",
+        "description": "Book a submission appointment online in advance with the Embassy of the Republic of Korea in Kathmandu — submission days are limited (typically Monday and Wednesday mornings) — then submit your application in person at that slot (or through an authorized visa agency, if the embassy directs applicants there for your visa type)."
       },
       {
         "order": 3,
@@ -1066,8 +1066,8 @@
     "steps": [
       {
         "order": 1,
-        "title": "Contact the Brazilian Embassy in Kathmandu",
-        "description": "The Embassy of Brazil is located at Chundevi Marg, Maharajgunj, Kathmandu. Email brasemb.katmandu@itamaraty.gov.br or call 01-4721462 / 01-4721463 to confirm the current appointment process, as small missions sometimes handle visa applications on specific days only."
+        "title": "Confirm how and when to apply",
+        "description": "Contact the Embassy of Brazil in Kathmandu (Chundevi Marg, Maharajgunj) by email at brasemb.katmandu@itamaraty.gov.br or by phone on 01-4721462 / 01-4721463 before you prepare anything. Its general office hours are Monday–Friday, 09:00–12:00 and 13:30–18:00, but small missions often accept visa applications only on certain days or by appointment, so ask when you can submit, the current fee, and how to pay."
       },
       {
         "order": 2,
@@ -1076,8 +1076,8 @@
       },
       {
         "order": 3,
-        "title": "Submit your application at the embassy and pay the fee",
-        "description": "Submit your documents in person (or as instructed by the embassy) during office hours, Monday–Friday, 09:00–12:00 and 13:30–18:00, and pay the consular visa fee, typically around US$80."
+        "title": "Submit your application and pay the fee",
+        "description": "Submit your documents in person at the date and time the embassy gives you (or as it instructs), and pay the consular visa fee, typically around US$80."
       },
       {
         "order": 4,
