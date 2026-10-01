@@ -1,6 +1,7 @@
 import visaData from "@/lib/visa-data.json";
 import passportIndex from "@/lib/passport-index.json";
 import destRequirements from "@/lib/destination-requirements.json";
+import nepalVisaFacts from "@/lib/nepal-visa-facts.json";
 
 // Country codes that show up in the worldwide passport-index dataset but
 // aren't in our main visa-data.json country list (mostly small island states
@@ -103,9 +104,42 @@ export type PassportEntry = {
   name: string;
   flag: string;
   maxStay?: number;
+  // Replaces "Up to N days" when the stay isn't a day count (e.g. India).
+  stayText?: string;
   fee?: string;
   processingTime?: string;
+  // Entry depends on something beyond the passport (e.g. a third-country visa).
+  conditional?: boolean;
+  // No Nepal-specific source confirmed this entry; tell travelers to check.
+  unconfirmed?: boolean;
 };
+
+// Hand-checked facts for Nepali passport holders (see the file's _comment).
+export type NepalVisaFact = {
+  status: string;
+  fee: string;
+  stay?: number;
+  stayText?: string;
+  confidence: "confirmed" | "unconfirmed";
+  conditional?: boolean;
+  conditions: string[];
+  sources: string[];
+};
+
+const NEPAL_FACTS = (nepalVisaFacts as any).destinations as Record<string, NepalVisaFact>;
+export const NEPAL_FACTS_CHECKED: string = (nepalVisaFacts as any).checked;
+
+export function getNepalFact(destination: string): NepalVisaFact | undefined {
+  return NEPAL_FACTS[destination];
+}
+
+// Entry status for a passport -> destination pair: the passport-index
+// dataset's value, corrected by the hand-checked Nepal facts where the
+// dataset is wrong for Nepalis (e.g. Palau, Bolivia need a visa first).
+export function getEffectiveStatus(passport: string, destination: string, rawStatus: string): string {
+  if (passport === "NP") return NEPAL_FACTS[destination]?.status ?? rawStatus;
+  return rawStatus;
+}
 
 // Visa-free stay length in days for a specific passport -> destination pair,
 // straight from the passport-index dataset. Prefer this over the generic
@@ -129,34 +163,28 @@ export function describeFee(status: string, fee: string | undefined): string | u
   return fee;
 }
 
-// Destination-specific facts for Nepali passport holders that the generic
-// datasets can't express.
-const NP_OVERRIDES: Record<string, { stay?: string; fee?: string }> = {
-  // 1950 Indo-Nepal Treaty: open border, no visa or time limit.
-  IN: { stay: "No time limit (open border)", fee: "No visa needed" },
-};
-
-export function getNepalOverride(destination: string) {
-  return NP_OVERRIDES[destination];
-}
-
 // Short fee phrase for list cards, where the fee sits next to the stay
-// length with no column heading to explain it.
+// length with no column heading to explain it: bare amounts get a
+// "Visa fee" prefix, sentences ("No visa fee", "Israeli visa fee applies")
+// are shown as written.
 export function feeCardLabel(fee: string | undefined): string | undefined {
   if (!fee) return undefined;
-  if (fee === "No visa fee" || fee === "No visa needed") return fee;
   if (/^free$/i.test(fee)) return "Free visa";
-  return `Visa fee ${fee}`;
+  if (/^([$€£]|around |from |varies |set by )/i.test(fee)) {
+    return `Visa fee ${fee.charAt(0).toLowerCase()}${fee.slice(1)}`;
+  }
+  return fee;
 }
 
 const listCache = new Map<PassportCategory, PassportEntry[]>();
 
 // Builds the list of destinations at a given access level for a Nepali
-// passport, from the open-source passport-index dataset already bundled
-// with the app (see passport-index.json's own "source" field), enriched
-// with the generic per-destination fee/processingTime reference data in
-// destination-requirements.json where available. Cached per category:
-// the scan covers ~40k pairs and the data never changes at runtime.
+// passport: the open-source passport-index dataset bundled with the app
+// (see passport-index.json's own "source" field), corrected and enriched by
+// the hand-checked nepal-visa-facts.json, falling back to the generic
+// per-destination reference data in destination-requirements.json for
+// anything the facts file doesn't cover. Cached per category: the scan
+// covers ~40k pairs and the data never changes at runtime.
 export function buildVisaList(category: PassportCategory): PassportEntry[] {
   const cached = listCache.get(category);
   if (cached) return cached;
@@ -166,23 +194,37 @@ export function buildVisaList(category: PassportCategory): PassportEntry[] {
     { fee: string; maxStay: number; processingTime: string }
   >;
   const out: PassportEntry[] = [];
-  for (const [pair, status] of Object.entries(reqs)) {
-    if (!pair.startsWith("NP->") || status !== category) continue;
+  for (const [pair, rawStatus] of Object.entries(reqs)) {
+    if (!pair.startsWith("NP->")) continue;
     const code = pair.split("->")[1];
     if (code === "NP") continue; // data artifact — not a real destination
+    if (getEffectiveStatus("NP", code, rawStatus) !== category) continue;
     const info = NAME_BY_CODE[code];
     if (!info) continue;
+    const fact = NEPAL_FACTS[code];
     const dest = dests[code];
-    out.push({
-      code,
-      name: info.name,
-      flag: info.flag,
-      // Visa-free stays come from the passport-specific dataset only; the
-      // generic figure is often another nationality's allowance.
-      maxStay: category === "visa_free" ? getStayDays("NP", code) : dest?.maxStay,
-      fee: describeFee(category, dest?.fee),
-      processingTime: dest?.processingTime,
-    });
+    out.push(fact
+      ? {
+          code,
+          name: info.name,
+          flag: info.flag,
+          maxStay: fact.stay,
+          stayText: fact.stayText,
+          fee: fact.fee,
+          // destReq's processing time is another nationality's; leave it out.
+          conditional: fact.conditional,
+          unconfirmed: fact.confidence === "unconfirmed",
+        }
+      : {
+          code,
+          name: info.name,
+          flag: info.flag,
+          // Visa-free stays come from the passport-specific dataset only;
+          // the generic figure is often another nationality's allowance.
+          maxStay: category === "visa_free" ? getStayDays("NP", code) : dest?.maxStay,
+          fee: describeFee(category, dest?.fee),
+          processingTime: dest?.processingTime,
+        });
   }
   out.sort((a, b) => a.name.localeCompare(b.name));
   listCache.set(category, out);

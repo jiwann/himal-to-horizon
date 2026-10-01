@@ -6,7 +6,7 @@
  * Run with:  node scripts/sync_visa_data.mjs
  */
 
-import { createReadStream, writeFileSync } from "fs";
+import { createReadStream, existsSync, readFileSync, writeFileSync } from "fs";
 import { createInterface } from "readline";
 import { fileURLToPath } from "url";
 import path from "path";
@@ -160,6 +160,18 @@ async function main() {
     requirements,
     stayDays,
   };
+
+  // nepal-visa-facts.json hand-overrides NP->* statuses; flag any NP change
+  // in the source so those facts get re-checked rather than silently masking it.
+  if (existsSync(OUT_PATH)) {
+    const previous = JSON.parse(readFileSync(OUT_PATH, "utf-8")).requirements ?? {};
+    const npChanges = Object.keys(requirements)
+      .filter((k) => k.startsWith("NP->") && previous[k] && previous[k] !== requirements[k])
+      .map((k) => `${k}: ${previous[k]} -> ${requirements[k]}`);
+    if (npChanges.length > 0) {
+      console.warn(`! Nepal passport changes — re-check client/src/lib/nepal-visa-facts.json:\n  ${npChanges.join("\n  ")}`);
+    }
+  }
 
   writeFileSync(OUT_PATH, JSON.stringify(output));
   console.log(`✓ ${output.count} pairs written to ${OUT_PATH}`);

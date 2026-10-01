@@ -6,7 +6,8 @@ import { useLanguage } from "@/contexts/language-context";
 import type { TranslationKey } from "@/lib/i18n";
 import { ArrowUpRight, ShieldCheck, Info, Search } from "lucide-react";
 import { setSEO, resetSEO } from "@/lib/seo";
-import { buildVisaList, feeCardLabel, type PassportEntry } from "@/lib/passport-lookup";
+import { buildVisaList, type PassportEntry } from "@/lib/passport-lookup";
+import { VisaEntryMeta } from "@/components/visa-entry-meta";
 
 const AMBER = "hsl(22 79% 75%)";
 const BLUE = "hsl(205 80% 68%)";
@@ -21,7 +22,6 @@ function cardStyle(): React.CSSProperties {
 
 function EntryCard({ entry }: { entry: PassportEntry }) {
   const [, setLocation] = useLocation();
-  const { t } = useLanguage();
   return (
     <button
       type="button"
@@ -33,13 +33,7 @@ function EntryCard({ entry }: { entry: PassportEntry }) {
       <span className="text-xl shrink-0">{entry.flag}</span>
       <div className="min-w-0 flex-1">
         <div className="text-sm font-bold text-white truncate">{entry.name}</div>
-        <div className="text-xs" style={{ color: "rgba(255,255,255,0.5)" }}>
-          {entry.maxStay
-            ? `${t("visa.up_to" as TranslationKey)} ${entry.maxStay} ${t("visa.days_unit" as TranslationKey)}`
-            : t("visa.stay_varies" as TranslationKey)}
-          {entry.fee ? ` · ${feeCardLabel(entry.fee)}` : ""}
-          {entry.processingTime ? ` · ${entry.processingTime}` : ""}
-        </div>
+        <VisaEntryMeta entry={entry} showProcessing />
       </div>
       <ArrowUpRight className="h-4 w-4 shrink-0" style={{ color: "rgba(255,255,255,0.35)" }} />
     </button>
