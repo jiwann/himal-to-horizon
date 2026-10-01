@@ -89,6 +89,10 @@ export default function CommunityPage() {
     }
   }
 
+  // "Share" opens the new-post form pre-set to whichever post type the
+  // reader is browsing, so Visa Experiences -> Share lands on the visa form.
+  const shareHref = typeFilter === "all" ? "/community/new" : `/community/new?type=${typeFilter}`;
+
   const typeTabs: { id: TypeFilter; label: string }[] = [
     { id: "all", label: cui("filter_all") },
     { id: "story", label: cui("filter_stories") },
@@ -142,7 +146,7 @@ export default function CommunityPage() {
           </p>
           <div className="mt-4">
             <Button
-              onClick={() => setLocation("/community/new")}
+              onClick={() => setLocation(shareHref)}
               className="font-bold"
               style={{ background: COMMUNITY_AMBER, color: "#000" }}
               data-testid="hero-cta-share"
@@ -198,7 +202,7 @@ export default function CommunityPage() {
             </button>
           ))}
           <Button
-            onClick={() => setLocation("/community/new")}
+            onClick={() => setLocation(shareHref)}
             className="ml-auto h-8 font-bold"
             style={{ background: COMMUNITY_AMBER, color: "#000" }}
             data-testid="button-share-story"
@@ -286,7 +290,7 @@ export default function CommunityPage() {
             <Users className="h-10 w-10 mx-auto mb-3 opacity-30" />
             <p className="text-foreground font-semibold">{cui("empty_title")}</p>
             <p className="text-sm text-muted-foreground mt-1 mb-4">{cui("empty_subtitle")}</p>
-            <Button onClick={() => setLocation("/community/new")} className="font-bold" style={{ background: COMMUNITY_AMBER, color: "#000" }} data-testid="button-share-first">
+            <Button onClick={() => setLocation(shareHref)} className="font-bold" style={{ background: COMMUNITY_AMBER, color: "#000" }} data-testid="button-share-first">
               <PenLine className="h-4 w-4 mr-1.5" /> {cui("cta_share_story")}
             </Button>
           </div>

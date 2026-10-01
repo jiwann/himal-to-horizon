@@ -15,6 +15,13 @@ import { LANGUAGE_LABELS, LANGUAGE_FLAGS } from "@/lib/i18n";
 import type { Language } from "@/lib/i18n";
 import { setSEO, resetSEO } from "@/lib/seo";
 
+const TRUST_CHIP: React.CSSProperties = {
+  background: "rgba(6,13,23,0.5)",
+  border: "1px solid rgba(255,255,255,0.10)",
+  backdropFilter: "blur(8px)",
+  WebkitBackdropFilter: "blur(8px)",
+};
+
 export default function HomePage() {
   const [, setLocation] = useLocation();
   const { language, setLanguage, t } = useLanguage();
@@ -56,7 +63,7 @@ export default function HomePage() {
       {/* ── Hero ───────────────────────────────────────────────────────────── */}
       <div
         className="relative overflow-hidden"
-        style={{ minHeight: "560px" }}
+        style={{ minHeight: "640px" }}
       >
         <div
           className="absolute inset-0"
@@ -64,35 +71,40 @@ export default function HomePage() {
             backgroundImage: `url(${heroBg})`,
             backgroundSize: "cover",
             backgroundPosition: "center 28%",
-            filter: "brightness(1.22) saturate(1.15) contrast(1.03)",
+            filter: "saturate(1.08) contrast(1.06)",
           }}
         />
-        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(6,13,23,0.10) 0%, rgba(6,13,23,0.01) 18%, rgba(6,13,23,0.20) 55%, rgba(6,13,23,0.95) 100%)" }} />
+        {/* Darken the bright sunrise sky behind the header and headline, then fade into the page background */}
+        <div className="absolute inset-0" style={{ background: "linear-gradient(to bottom, rgba(6,13,23,0.78) 0%, rgba(6,13,23,0.38) 26%, rgba(6,13,23,0.30) 52%, rgba(6,13,23,0.72) 80%, hsl(var(--background)) 100%)" }} />
         {/* Vignette focused behind the headline so light text stays legible over bright snow, without darkening the whole photo */}
         <div
           className="absolute pointer-events-none"
-          style={{ top: "38%", left: "50%", transform: "translate(-50%, -50%)", width: "min(900px, 92vw)", height: "420px", background: "radial-gradient(ellipse at center, rgba(4,10,18,0.55) 0%, rgba(4,10,18,0.32) 45%, transparent 75%)" }}
+          style={{ top: "52%", left: "50%", transform: "translate(-50%, -50%)", width: "min(980px, 96vw)", height: "460px", background: "radial-gradient(ellipse at center, rgba(4,10,18,0.50) 0%, rgba(4,10,18,0.22) 50%, transparent 76%)" }}
         />
 
-        {/* ── Nav ─────────────────────────────────────────────────────────── */}
-        <nav
-          className="relative z-20 flex items-center px-5 py-4 gap-2"
+        {/* ── Header: brand row + service tabs in one frosted bar ───────────── */}
+        <header
+          className="relative z-20"
           style={{
-            background: "linear-gradient(to bottom, rgba(6,13,23,0.55) 0%, rgba(6,13,23,0.28) 70%, transparent 100%)",
-            backdropFilter: "blur(6px)",
+            background: "rgba(6,13,23,0.72)",
+            backdropFilter: "blur(14px) saturate(1.2)",
+            WebkitBackdropFilter: "blur(14px) saturate(1.2)",
+            borderBottom: "1px solid rgba(255,255,255,0.08)",
+            boxShadow: "0 8px 32px rgba(0,0,0,0.25)",
           }}
         >
+        <nav className="flex items-center px-5 pt-3.5 pb-2.5 gap-2 max-w-7xl mx-auto">
           <button
             type="button"
             data-testid="logo"
             onClick={() => { setMobileMenuOpen(false); window.scrollTo({ top: 0, behavior: "smooth" }); }}
             className="flex items-center gap-2 group bg-transparent border-0 p-0 cursor-pointer shrink-0"
           >
-            <img src={logoImg} alt="Himal to Horizon" className="w-10 h-10 rounded-full object-cover" />
+            <img src={logoImg} alt="Himal to Horizon" className="w-9 h-9 rounded-full object-cover" style={{ boxShadow: "0 0 0 1px rgba(255,255,255,0.18)" }} />
             <div
               data-testid="logo-text"
-              className="leading-tight transition-colors duration-200"
-              style={{ fontFamily: "var(--font-serif)", color: "white", fontSize: "28px", fontWeight: 800 }}
+              className="leading-tight tracking-tight transition-colors duration-200"
+              style={{ fontFamily: "var(--font-serif)", color: "white", fontSize: "22px", fontWeight: 800 }}
               onMouseEnter={(e) => (e.currentTarget.style.color = "hsl(22 79% 80%)")}
               onMouseLeave={(e) => (e.currentTarget.style.color = "white")}
             >
@@ -148,8 +160,8 @@ export default function HomePage() {
         </nav>
 
         {/* Service Tabs */}
-        <div className="relative z-10 px-4 pt-1 pb-0.5">
-          <div className="flex gap-0 overflow-x-auto" style={{ scrollbarWidth: "none", background: "rgba(0,0,0,0.28)", backdropFilter: "blur(6px)" }} data-testid="service-tabs">
+        <div className="px-4 pb-3 max-w-7xl mx-auto">
+          <div className="flex gap-1.5 overflow-x-auto" style={{ scrollbarWidth: "none" }} data-testid="service-tabs">
             {[
               { id: "tab-visa",      icon: <FileText className="h-4 w-4" />,   label: t("nav.visa_intelligence"),  path: "/visa-guides", primary: true },
               { id: "tab-flights",   icon: <Plane className="h-4 w-4" />,      label: t("nav.flights"),            path: "/flights" },
@@ -159,17 +171,21 @@ export default function HomePage() {
               { id: "tab-blog",      icon: <BookOpen className="h-4 w-4" />,   label: t("nav.travel_blog"),        path: "/blog" },
             ].map((tab) => (
               <button key={tab.id} type="button" data-testid={tab.id} onClick={() => setLocation(tab.path)}
-                className="flex items-center gap-2 px-5 py-3 text-base font-bold whitespace-nowrap transition-all border-b-2 bg-transparent shrink-0"
-                style={{ color: tab.primary ? "#F7B088" : "rgba(255,255,255,0.75)", borderColor: tab.primary ? "#F7B088" : "transparent" }}
-                onMouseEnter={(e) => { if (!tab.primary) e.currentTarget.style.color = "#fff"; }}
-                onMouseLeave={(e) => { if (!tab.primary) e.currentTarget.style.color = "rgba(255,255,255,0.75)"; }}
+                className="flex items-center gap-2 px-4 py-2 rounded-full text-sm font-semibold whitespace-nowrap transition-all shrink-0"
+                style={{
+                  color: tab.primary ? "hsl(211 60% 8%)" : "rgba(255,255,255,0.86)",
+                  background: tab.primary ? "#F7B088" : "rgba(255,255,255,0.06)",
+                  border: tab.primary ? "1px solid #F7B088" : "1px solid rgba(255,255,255,0.10)",
+                }}
+                onMouseEnter={(e) => { if (!tab.primary) { e.currentTarget.style.color = "#fff"; e.currentTarget.style.background = "rgba(255,255,255,0.12)"; } }}
+                onMouseLeave={(e) => { if (!tab.primary) { e.currentTarget.style.color = "rgba(255,255,255,0.86)"; e.currentTarget.style.background = "rgba(255,255,255,0.06)"; } }}
               >
                 {tab.icon}{tab.label}
               </button>
             ))}
           </div>
-          <div style={{ height: "1px", background: "rgba(255,255,255,0.10)", marginTop: "-1px" }} />
         </div>
+        </header>
 
         {/* Mobile Menu Drawer */}
         {mobileMenuOpen && (
@@ -208,18 +224,22 @@ export default function HomePage() {
         )}
 
         {/* ── Hero headline ────────────────────────────────────────────────── */}
-        <div className="relative z-10 flex flex-col items-center text-center px-5 pt-16 pb-20">
-          <div className="flex items-center gap-2 px-3.5 py-1.5 rounded-full mb-5" style={{ background: "rgba(6,13,23,0.55)", border: "1px solid rgba(247,176,136,0.55)", backdropFilter: "blur(6px)", boxShadow: "0 2px 14px rgba(0,0,0,0.35)" }}>
+        <div className="relative z-10 flex flex-col items-center text-center px-5 pt-20 pb-24">
+          <div className="flex items-center gap-2 px-4 py-1.5 rounded-full mb-7" style={{ background: "rgba(6,13,23,0.62)", border: "1px solid rgba(247,176,136,0.45)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}>
             <FileText className="h-3.5 w-3.5" style={{ color: "#F7B088" }} />
-            <span className="text-xs font-bold uppercase tracking-widest" style={{ color: "#FFFFFF", textShadow: "0 1px 6px rgba(0,0,0,0.6)" }}>{t("home.visa_hero_badge")}</span>
+            <span className="text-[11px] font-bold uppercase" style={{ color: "#FFFFFF", letterSpacing: "0.16em" }}>{t("home.visa_hero_badge")}</span>
           </div>
           <h1
-            className="text-4xl md:text-5xl lg:text-6xl font-extrabold text-white leading-tight max-w-3xl"
-            style={{ fontFamily: "var(--font-serif)", textShadow: "0 2px 6px rgba(0,0,0,0.85), 0 6px 28px rgba(0,0,0,0.65)" }}
+            className="text-[2.6rem] sm:text-5xl md:text-6xl lg:text-7xl font-extrabold text-white max-w-4xl"
+            style={{ fontFamily: "var(--font-serif)", lineHeight: 1.05, letterSpacing: "-0.025em", textShadow: "0 2px 24px rgba(0,0,0,0.45)" }}
           >
-            {t("home.visa_hero_title_1")}<br />{t("home.visa_hero_title_2")}
+            {t("home.visa_hero_title_1")}
+            <br />
+            <span style={{ background: "linear-gradient(100deg, #FFD9BF 0%, #F7B088 45%, #F2C46D 100%)", WebkitBackgroundClip: "text", backgroundClip: "text", color: "transparent", textShadow: "none", filter: "drop-shadow(0 2px 18px rgba(0,0,0,0.35))" }}>
+              {t("home.visa_hero_title_2")}
+            </span>
           </h1>
-          <p className="mt-5 text-base md:text-lg text-white/90 max-w-xl leading-relaxed" style={{ textShadow: "0 1px 4px rgba(0,0,0,0.9), 0 3px 14px rgba(0,0,0,0.7)" }}>
+          <p className="mt-6 text-base md:text-lg max-w-xl leading-relaxed" style={{ color: "rgba(255,255,255,0.92)", textShadow: "0 1px 12px rgba(0,0,0,0.55)" }}>
             {t("home.visa_hero_subtitle")}
           </p>
           <div className="flex flex-wrap gap-3 justify-center mt-8">
@@ -227,8 +247,8 @@ export default function HomePage() {
               type="button"
               data-testid="hero-cta-visa"
               onClick={() => setLocation("/visa-guides")}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all hover:opacity-90"
-              style={{ background: "#F7B088", color: "hsl(211 60% 8%)" }}
+              className="flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-bold transition-all hover:-translate-y-0.5"
+              style={{ background: "linear-gradient(180deg, #FAC4A3 0%, #F7B088 100%)", color: "hsl(211 60% 8%)", boxShadow: "0 10px 30px -8px rgba(247,176,136,0.65), inset 0 1px 0 rgba(255,255,255,0.5)" }}
             >
               <FileText className="h-4 w-4" /> {t("home.visa_hero_cta_primary")} <ArrowRight className="h-4 w-4" />
             </button>
@@ -236,16 +256,16 @@ export default function HomePage() {
               type="button"
               data-testid="hero-cta-services"
               onClick={scrollToOffers}
-              className="flex items-center gap-2 px-6 py-3 rounded-xl text-sm font-bold transition-all"
-              style={{ background: "rgba(255,255,255,0.12)", color: "#fff", border: "1px solid rgba(255,255,255,0.25)", backdropFilter: "blur(4px)" }}
+              className="flex items-center gap-2 px-7 py-3.5 rounded-full text-sm font-bold transition-all hover:-translate-y-0.5"
+              style={{ background: "rgba(6,13,23,0.55)", color: "#fff", border: "1px solid rgba(255,255,255,0.22)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" }}
             >
               <Globe className="h-4 w-4" /> {t("home.visa_hero_cta_secondary")}
             </button>
           </div>
-          <div className="flex flex-wrap items-center justify-center gap-x-6 gap-y-2 mt-8 text-xs font-semibold text-white/70">
-            <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5" style={{ color: "#F7B088" }} /> {t("home.trust_countries")}</span>
-            <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5" style={{ color: "#F7B088" }} /> {t("home.trust_sources")}</span>
-            <span className="flex items-center gap-1.5"><CheckCircle2 className="h-3.5 w-3.5" style={{ color: "#F7B088" }} /> {t("home.trust_refresh")}</span>
+          <div className="flex flex-wrap items-center justify-center gap-2 mt-10 text-xs font-semibold" style={{ color: "rgba(255,255,255,0.85)" }}>
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={TRUST_CHIP}><CheckCircle2 className="h-3.5 w-3.5" style={{ color: "#F7B088" }} /> {t("home.trust_countries")}</span>
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={TRUST_CHIP}><CheckCircle2 className="h-3.5 w-3.5" style={{ color: "#F7B088" }} /> {t("home.trust_sources")}</span>
+            <span className="flex items-center gap-1.5 px-3 py-1.5 rounded-full" style={TRUST_CHIP}><CheckCircle2 className="h-3.5 w-3.5" style={{ color: "#F7B088" }} /> {t("home.trust_refresh")}</span>
           </div>
         </div>
       </div>

@@ -9,6 +9,7 @@ import jurisdictions from "@/lib/jurisdictions.json";
 import officialPortals from "@/lib/official-portals.json";
 import destRequirements from "@/lib/destination-requirements.json";
 import { setSEO, resetSEO } from "@/lib/seo";
+import { describeFee, getStayDays, getEffectiveStatus, getNepalFact, NEPAL_FACTS_CHECKED } from "@/lib/passport-lookup";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -213,11 +214,13 @@ export default function VisaCheckPage() {
   const originInfo = SLUG_MAP[passportSlug];
   const destInfo = SLUG_MAP[destSlug];
 
-  // Tier-2: basic status from passport-index.json
+  // Tier-2: basic status from passport-index.json, corrected for Nepali
+  // passports by the hand-checked nepal-visa-facts.json.
   const tier2Key = originInfo && destInfo ? `${originInfo.iso}->${destInfo.iso}` : null;
+  const tier2Raw = tier2Key ? ((passportIndex as any).requirements[tier2Key] as string | undefined) : undefined;
   const tier2Status: StatusType =
-    tier2Key
-      ? ((passportIndex as any).requirements[tier2Key] as StatusType) ?? "unknown"
+    tier2Raw && originInfo && destInfo
+      ? (getEffectiveStatus(originInfo.iso, destInfo.iso, tier2Raw) as StatusType)
       : "unknown";
 
   // Tier-1: rich detail from visa-data.json
@@ -236,6 +239,27 @@ export default function VisaCheckPage() {
 
   const statusType: StatusType = tier1 ? tier1.statusType : tier2Status;
   const sc = STATUS_CONFIG[statusType] ?? STATUS_CONFIG.unknown;
+
+  // Display values for the generic (tier-2) view. destReq is one record per
+  // destination for every passport, so visa-free/on-arrival pairs get
+  // passport-aware fee, stay and processing text instead of, say, another
+  // nationality's sticker-visa fee.
+  const npFact = originInfo?.iso === "NP" && destInfo ? getNepalFact(destInfo.iso) : undefined;
+  const feeText = npFact?.fee ?? describeFee(statusType, destReq?.fee) ?? "Varies";
+  const stayDays = npFact
+    ? npFact.stay
+    : statusType === "visa_free"
+      ? (originInfo && destInfo ? getStayDays(originInfo.iso, destInfo.iso) : undefined)
+      : destReq?.maxStay;
+  const stayText = npFact?.stayText ?? (stayDays ? `${stayDays} days` : "Varies");
+  const processingText = statusType === "visa_free"
+    ? "No visa needed"
+    : statusType === "visa_on_arrival"
+      ? "On arrival"
+      : npFact
+        // destReq's processing time is another nationality's; don't guess.
+        ? (statusType === "evisa" ? "Apply online before travel" : "Apply before travel")
+        : destReq?.processingTime ?? "Varies";
   const StatusIcon = sc.icon;
 
   const generatedAt: string = (passportIndex as any).generated;
@@ -258,9 +282,9 @@ export default function VisaCheckPage() {
     const originName = originInfo.name;
     const destName = destInfo.name;
     const statusLabel = sc.label;
-    const fee = destReq?.fee ?? "Varies";
-    const processing = destReq?.processingTime ?? "Varies";
-    const maxStay = destReq ? `${destReq.maxStay} days` : "Varies";
+    const fee = feeText;
+    const processing = processingText;
+    const maxStay = stayText;
     const docs = destReq?.docs?.slice(0, 4).join(", ") ?? "Passport (6+ months validity)";
 
     const faqSchema = {
@@ -319,7 +343,7 @@ export default function VisaCheckPage() {
     return () => {
       document.getElementById("visa-faq-jsonld")?.remove();
     };
-  }, [originInfo, destInfo, sc, destReq]);
+  }, [originInfo, destInfo, sc, destReq, feeText, processingText, stayText]);
 
   // ─── Not Found ───────────────────────────────────────────────────────────────
   if (!originInfo || !destInfo) {
@@ -581,24 +605,60 @@ export default function VisaCheckPage() {
                   <div className="px-5 py-4" style={{ background: "rgba(255,255,255,0.02)" }}>
                     <div className="flex items-center gap-1.5 mb-1">
                       <DollarSign className="h-3.5 w-3.5 text-muted-foreground" />
-                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Typical Fee</p>
+                      <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">{statusType === "visa_free" ? "Visa Fee" : "Typical Fee"}</p>
                     </div>
-                    <p className="text-sm font-semibold text-foreground/80" data-testid="fee-value">{destReq.fee}</p>
+                    <p className="text-sm font-semibold text-foreground/80" data-testid="fee-value">{feeText}</p>
                   </div>
                   <div className="px-5 py-4" style={{ background: "rgba(255,255,255,0.02)" }}>
                     <div className="flex items-center gap-1.5 mb-1">
                       <Clock className="h-3.5 w-3.5 text-muted-foreground" />
                       <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Processing</p>
                     </div>
-                    <p className="text-sm font-semibold text-foreground/80" data-testid="processing-value">{destReq.processingTime}</p>
+                    <p className="text-sm font-semibold text-foreground/80" data-testid="processing-value">{processingText}</p>
                   </div>
                   <div className="px-5 py-4" style={{ background: "rgba(255,255,255,0.02)" }}>
                     <div className="flex items-center gap-1.5 mb-1">
                       <Globe className="h-3.5 w-3.5 text-muted-foreground" />
                       <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">Max Stay</p>
                     </div>
-                    <p className="text-sm font-semibold text-foreground/80" data-testid="maxstay-value">{destReq.maxStay} days</p>
+                    <p className="text-sm font-semibold text-foreground/80" data-testid="maxstay-value">{stayText}</p>
                   </div>
+                </div>
+              )}
+
+              {/* Nepal-specific conditions, from nepal-visa-facts.json */}
+              {npFact && (
+                <div className="px-6 pt-5 space-y-2" data-testid="nepal-facts">
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground">For Nepali passport holders</p>
+                    <span
+                      className="text-[10px] font-bold px-1.5 py-0.5 rounded"
+                      style={npFact.confidence === "confirmed"
+                        ? { background: "rgba(56,200,120,0.12)", color: "hsl(145 65% 60%)" }
+                        : { background: "rgba(247,200,100,0.12)", color: "hsl(42 90% 65%)" }}
+                    >
+                      {npFact.confidence === "confirmed" ? `Checked ${formatDate(NEPAL_FACTS_CHECKED)}` : "Not confirmed — check before travel"}
+                    </span>
+                  </div>
+                  {npFact.conditions.length > 0 && (
+                    <ul className="space-y-1.5">
+                      {npFact.conditions.map((c, i) => (
+                        <li key={i} className="flex items-start gap-2 text-xs text-foreground/80">
+                          <AlertTriangle className="h-3.5 w-3.5 shrink-0 mt-0.5" style={{ color: "hsl(42 90% 65%)" }} />
+                          {c}
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <p className="text-[11px] text-muted-foreground">
+                    Sources:{" "}
+                    {npFact.sources.map((url, i) => (
+                      <span key={url}>
+                        {i > 0 && ", "}
+                        <a href={url} target="_blank" rel="noopener noreferrer" className="underline">{new URL(url).hostname.replace(/^www\./, "")}</a>
+                      </span>
+                    ))}
+                  </p>
                 </div>
               )}
 
@@ -616,8 +676,10 @@ export default function VisaCheckPage() {
                     <div>
                       <p className="text-sm font-semibold" style={{ color: sc.color }}>Apply Online Before Travel</p>
                       <p className="text-xs text-muted-foreground mt-1">
-                        {destReq
-                          ? `Apply for the ${destInfo.name} e-Visa at least ${destReq.processingTime.toLowerCase()} before your trip. Fee: ${destReq.fee}.`
+                        {npFact
+                          ? `Apply for your ${destInfo.name} e-Visa or travel authorization online before you fly. Fee: ${feeText}.`
+                          : destReq
+                          ? `Apply for the ${destInfo.name} e-Visa at least ${processingText.toLowerCase()} before your trip. Fee: ${feeText}.`
                           : `Search for the official ${destInfo.name} e-Visa portal and apply at least 2–4 weeks before your trip.`}
                       </p>
                     </div>
@@ -635,7 +697,7 @@ export default function VisaCheckPage() {
                       <p className="text-sm font-semibold" style={{ color: sc.color }}>Available at Port of Entry</p>
                       <p className="text-xs text-muted-foreground mt-1">
                         {destReq
-                          ? `Pay ${destReq.fee} at the ${destInfo.name} immigration counter on arrival. Max stay: ${destReq.maxStay} days.`
+                          ? `Visa fee: ${feeText}, paid at the ${destInfo.name} immigration counter on arrival. Max stay: ${stayText}.`
                           : `Bring sufficient funds, a return ticket, and passport photos. Check the official ${destInfo.name} immigration website for fees.`}
                       </p>
                     </div>
@@ -652,8 +714,10 @@ export default function VisaCheckPage() {
                       <div>
                         <p className="text-sm font-semibold" style={{ color: sc.color }}>Apply at Nearest Embassy or VFS Global</p>
                         <p className="text-xs text-muted-foreground mt-1">
-                          {destReq
-                            ? `Contact the ${destInfo.name} embassy. Fee: ${destReq.fee}. Allow ${destReq.processingTime} for processing.`
+                          {npFact
+                          ? `Get a visa before you travel — see the conditions above. Fee: ${feeText}.`
+                          : destReq
+                            ? `Contact the ${destInfo.name} embassy. Fee: ${feeText}. Allow ${processingText} for processing.`
                             : `Contact the ${destInfo.name} embassy or a VFS Global service centre in your nearest city. Allow 3–6 weeks for processing.`}
                         </p>
                         <a
@@ -721,11 +785,11 @@ export default function VisaCheckPage() {
                       <p className="text-sm font-semibold" style={{ color: sc.color }}>No Visa Required</p>
                       <p className="text-xs text-muted-foreground mt-1">
                         {destReq
-                          ? `You may enter ${destInfo.name} freely with a valid ${originInfo.name} passport. Typical maximum stay: ${destReq.maxStay} days.`
+                          ? `You may enter ${destInfo.name} freely with a valid ${originInfo.name} passport. Maximum stay: ${stayText}.`
                           : `You may enter ${destInfo.name} freely. Check entry conditions for maximum stay duration.`}
                       </p>
-                      {destReq?.notes && (
-                        <p className="text-xs text-muted-foreground mt-1 italic">{destReq.notes}</p>
+                      {!npFact && destReq?.notes && (
+                        <p className="text-xs text-muted-foreground mt-1 italic">General note for all nationalities: {destReq.notes}</p>
                       )}
                     </div>
                   </div>
@@ -744,7 +808,7 @@ export default function VisaCheckPage() {
                       </li>
                     ))}
                   </ul>
-                  {destReq.notes && (
+                  {!npFact && destReq.notes && (
                     <p className="text-xs text-muted-foreground mt-3 italic border-l-2 pl-3" style={{ borderColor: `${sc.color}50` }}>
                       {destReq.notes}
                     </p>
@@ -778,6 +842,9 @@ export default function VisaCheckPage() {
         >
           <RefreshCw className="h-3.5 w-3.5 text-muted-foreground shrink-0" />
           <p className="text-xs text-muted-foreground">
+            {npFact && (
+              <>Nepal entry rules checked: <span className="font-semibold text-foreground/60">{formatDate(NEPAL_FACTS_CHECKED)}</span>{" · "}</>
+            )}
             Last Verified: <span className="font-semibold text-foreground/60">{formatDate(generatedAt)}</span> via Global Intelligence Feed
             {" · "}
             Source:{" "}
