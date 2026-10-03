@@ -194,10 +194,10 @@
       "fee": "Free (30-day Visa on Arrival for Indian passport holders)",
       "applyOnline": {
         "available": true,
-        "url": "https://icp.gov.ae/en/services/visaservices/"
+        "url": "https://smartservices.icp.gov.ae"
       },
       "applyVFS": { "available": false },
-      "officialUrl": "https://u.ae/en/information-and-services/visa-and-emirates-id/do-you-need-an-entry-permit-to-enter-the-uae",
+      "officialUrl": "https://u.ae/en/information-and-services/visa-and-emirates-id/Types-of-visas/tourist-visa",
       "notes": "Indian passport holders receive a free 30-day Visa on Arrival at UAE airports (Dubai, Abu Dhabi, Sharjah, etc.). A 90-day e-Visa is also available online before travel. Return ticket and sufficient funds required.",
       "embassyInOrigin": true,
       "nearestEmbassy": {
@@ -249,10 +249,10 @@
       "fee": "Around AED 395–450 (~USD $110–125) via a sponsor; varies by sponsor",
       "applyOnline": {
         "available": true,
-        "url": "https://icp.gov.ae/en/services/visaservices/"
+        "url": "https://smartservices.icp.gov.ae"
       },
       "applyVFS": { "available": false },
-      "officialUrl": "https://u.ae/en/information-and-services/visa-and-emirates-id/do-you-need-an-entry-permit-to-enter-the-uae",
+      "officialUrl": "https://u.ae/en/information-and-services/visa-and-emirates-id/Types-of-visas/tourist-visa",
       "notes": "Nepali passport holders are not visa-exempt and cannot get a visa on arrival. Apply for a UAE e-Visa before travel through a UAE-based sponsor — an airline that offers visa sponsorship, a hotel that processes visas, or a licensed UAE travel agency. Fees vary by sponsor.",
       "embassyInOrigin": true,
       "nearestEmbassy": {
@@ -391,7 +391,7 @@
       "fee": "AED 100 (~USD $27) for 30 days",
       "applyOnline": {
         "available": true,
-        "url": "https://icp.gov.ae/en/services/visaservices/"
+        "url": "https://smartservices.icp.gov.ae"
       },
       "applyVFS": { "available": false },
       "officialUrl": "https://u.ae/en/information-and-services/visa-and-emirates-id",
@@ -412,7 +412,7 @@
       "fee": "AED 300–500 (~USD $82–$136)",
       "applyOnline": {
         "available": true,
-        "url": "https://icp.gov.ae/en/services/visaservices/"
+        "url": "https://smartservices.icp.gov.ae"
       },
       "applyVFS": { "available": false },
       "officialUrl": "https://u.ae/en/information-and-services/visa-and-emirates-id",
