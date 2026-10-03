@@ -21,6 +21,8 @@ import VisaCheckPage from "@/pages/visa-check";
 import VisaDifficultyPage from "@/pages/visa-difficulty";
 import VisaFreePage from "@/pages/visa-free";
 import VisaEvisaPage from "@/pages/visa-evisa";
+import VisaShortLinkPage from "@/pages/visa-short-link";
+import VisaChecklistPage from "@/pages/visa-checklist";
 import BlogPage from "@/pages/blog";
 import BlogPostPage from "@/pages/blog-post";
 import StaysPage from "@/pages/stays";
@@ -93,7 +95,10 @@ function Router() {
       <Route path="/visa-guides/difficulty" component={VisaDifficultyPage} />
       <Route path="/visa-guides/visa-free" component={VisaFreePage} />
       <Route path="/visa-guides/evisa" component={VisaEvisaPage} />
+      <Route path="/visa-guides/:countryCode/:category/checklist" component={VisaChecklistPage} />
+      <Route path="/visa-guides/:countryCode/:category" component={VisaGuidesPage} />
       <Route path="/visa/:passport/:destination" component={VisaCheckPage} />
+      <Route path="/visa/:slug" component={VisaShortLinkPage} />
       <Route path="/blog" component={BlogPage} />
       <Route path="/blog/:slug" component={BlogPostPage} />
       <Route path="/stays" component={StaysPage} />

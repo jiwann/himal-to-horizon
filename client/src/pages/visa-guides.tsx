@@ -1,12 +1,13 @@
 import { useState, useEffect, useMemo, useRef } from "react";
-import { useLocation } from "wouter";
+import { useLocation, useRoute } from "wouter";
+import { VISA_CATEGORIES, type VisaCategory } from "@shared/visa-schema";
 import { useQuery } from "@tanstack/react-query";
 import { NavTabs } from "@/components/nav-tabs";
 import { VisaSubNav } from "@/components/visa-subnav";
 import {
   ArrowLeft, FileText, Clock, DollarSign, CheckCircle2, ExternalLink,
   MapPin, ChevronDown, ChevronUp, Globe, Languages, AlertCircle, ShieldCheck,
-  Search, X,
+  Search, X, ClipboardCheck, Link2,
 } from "lucide-react";
 import { useLanguage } from "@/contexts/language-context";
 import type { TranslationKey } from "@/lib/i18n";
@@ -14,16 +15,10 @@ import { setSEO, resetSEO } from "@/lib/seo";
 import { DEFAULT_FROM_COUNTRY } from "@shared/countries";
 import { VisaWidget } from "@/components/visa-widget";
 import { isLinkBroken } from "@/lib/link-status";
+import { shortLinkFor } from "@/lib/visa-short-links";
+import { VisaAlertSignup } from "@/components/visa-alert-signup";
 
-// ── Types (mirrors shared/visa-schema.ts on the server) ────────────────────
-
-type VisaCategory =
-  | "tourist"
-  | "student_f1"
-  | "exchange_j1"
-  | "work_h2b"
-  | "student_general"
-  | "work_general";
+// ── Types ─────────────────────────────────────────────────────────────────
 
 function useCategoryLabels(t: (key: TranslationKey) => string): Record<VisaCategory, string> {
   return {
@@ -465,6 +460,8 @@ function DetailScreen({
   );
   const [langMenuOpen, setLangMenuOpen] = useState(false);
   const [openFaq, setOpenFaq] = useState<number | null>(null);
+  const [copied, setCopied] = useState(false);
+  const [, setLocation] = useLocation();
 
   const { data, isLoading, isFetching, error } = useQuery<LocalizedResponse>({
     queryKey: ["/api/visa", fromCountryCode, countryCode, category, lang],
@@ -543,6 +540,34 @@ function DetailScreen({
         </div>
         <h1 className="text-2xl sm:text-3xl font-extrabold text-white mb-2">{profile.countryName}</h1>
         <p className="text-sm leading-relaxed" style={{ color: "rgba(255,255,255,0.7)" }}>{profile.summary}</p>
+      </div>
+
+      {/* Checklist download + short shareable link (for video descriptions) */}
+      <div className="flex flex-wrap items-center gap-2 mb-4">
+        <a
+          href={`/visa-guides/${countryCode}/${category}/checklist?lang=${encodeURIComponent(lang)}`}
+          onClick={(e) => { e.preventDefault(); setLocation(`/visa-guides/${countryCode}/${category}/checklist?lang=${encodeURIComponent(lang)}`); }}
+          className="flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-bold"
+          style={{ background: "#F7B088", color: "hsl(211 60% 8%)" }}
+          data-testid="button-open-checklist"
+        >
+          <ClipboardCheck className="h-3.5 w-3.5" /> Download document checklist
+        </a>
+        {category === "tourist" && (
+          <button
+            type="button"
+            onClick={() => {
+              const url = `https://himaltohorizon.com${shortLinkFor(profile.countryName)}`;
+              navigator.clipboard?.writeText(url).then(() => { setCopied(true); setTimeout(() => setCopied(false), 2000); }).catch(() => {});
+            }}
+            className="flex items-center gap-2 px-3.5 py-2 rounded-lg text-xs font-semibold"
+            style={{ background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.15)", color: "#fff" }}
+            data-testid="button-copy-short-link"
+          >
+            <Link2 className="h-3.5 w-3.5" />
+            {copied ? "Link copied!" : `himaltohorizon.com${shortLinkFor(profile.countryName)}`}
+          </button>
+        )}
       </div>
 
       {/* Language toggle for this guide's content */}
@@ -661,6 +686,11 @@ function DetailScreen({
         </div>
       </div>
 
+      {/* Rule-change alerts for this country */}
+      <div className="mb-6">
+        <VisaAlertSignup defaultCountry={countryCode} countryName={profile.countryName} source="guide" />
+      </div>
+
       {/* FAQs */}
       {profile.faqs.length > 0 && (
         <div className="mb-6">
@@ -709,7 +739,14 @@ function DetailScreen({
 
 export default function VisaGuidesPage() {
   const [, setLocation] = useLocation();
-  const [selection, setSelection] = useState<{ countryCode: string; category: VisaCategory } | null>(null);
+  // The open guide lives in the URL (/visa-guides/BR/tourist) so every guide
+  // has a shareable address — used by short links like /visa/brazil and in
+  // video descriptions.
+  const [, params] = useRoute<{ countryCode: string; category: string }>("/visa-guides/:countryCode/:category");
+  const selection =
+    params && (VISA_CATEGORIES as readonly string[]).includes(params.category)
+      ? { countryCode: params.countryCode.toUpperCase(), category: params.category as VisaCategory }
+      : null;
   const [fromCountry, setFromCountry] = useState<FromCountry | null>(null);
 
   const { data: fromCountries = [], isLoading: fromCountriesLoading } = useQuery<FromCountry[]>({
@@ -767,13 +804,13 @@ export default function VisaGuidesPage() {
           fromCountryCode={fromCode}
           countryCode={selection.countryCode}
           category={selection.category}
-          onBack={() => setSelection(null)}
+          onBack={() => setLocation("/visa-guides")}
         />
       ) : (
         <PickerScreen
           countries={countries}
           isLoading={isLoading}
-          onPick={(countryCode, category) => setSelection({ countryCode, category })}
+          onPick={(countryCode, category) => setLocation(`/visa-guides/${countryCode}/${category}`)}
           fromCountries={fromCountries}
           fromCountriesLoading={fromCountriesLoading}
           fromCountry={fromCountry}
