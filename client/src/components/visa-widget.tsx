@@ -6,6 +6,12 @@ import allCountriesData from "@/lib/all-countries.json";
 import passportIndex from "@/lib/passport-index.json";
 import { getEffectiveStatus, getGuideStatus } from "@/lib/passport-lookup";
 import visaData from "@/lib/visa-data.json";
+import visaSyncStatus from "@/lib/visa-sync-status.json";
+
+// "3 Oct 2026" — when the weekly sync last compared our data with the source.
+const LAST_CHECKED = new Date(visaSyncStatus.lastChecked).toLocaleDateString("en-GB", {
+  day: "numeric", month: "short", year: "numeric",
+});
 
 type Country = { code: string; name: string; flag: string };
 type StatusType = "visa_free" | "evisa" | "visa_on_arrival" | "sticker_visa" | "not_admitted" | "unknown";
@@ -290,6 +296,9 @@ export function VisaWidget({ defaultOrigin, defaultDestination }: VisaWidgetProp
           Select both countries to check requirements instantly.
         </p>
       )}
+      <p className="text-[10px] text-center mt-2.5" style={{ color: "rgba(255,255,255,0.35)" }} data-testid="visa-widget-last-checked">
+        Entry data checked {LAST_CHECKED} · refreshed weekly
+      </p>
     </div>
   );
 }

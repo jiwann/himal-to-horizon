@@ -9,6 +9,7 @@ import jurisdictions from "@/lib/jurisdictions.json";
 import officialPortals from "@/lib/official-portals.json";
 import destRequirements from "@/lib/destination-requirements.json";
 import { setSEO, resetSEO } from "@/lib/seo";
+import visaSyncStatus from "@/lib/visa-sync-status.json";
 import { describeFee, getStayDays, getEffectiveStatus, getGuideStatus, getNepalFact, NEPAL_FACTS_CHECKED } from "@/lib/passport-lookup";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -263,7 +264,7 @@ export default function VisaCheckPage() {
         : destReq?.processingTime ?? "Varies";
   const StatusIcon = sc.icon;
 
-  const generatedAt: string = (passportIndex as any).generated;
+  const syncStatus = visaSyncStatus as { lastChecked: string; lastChanged: string };
 
   useEffect(() => {
     const originName = originInfo?.name ?? passportSlug;
@@ -846,7 +847,9 @@ export default function VisaCheckPage() {
             {npFact && (
               <>Nepal entry rules checked: <span className="font-semibold text-foreground/60">{formatDate(NEPAL_FACTS_CHECKED)}</span>{" · "}</>
             )}
-            Last Verified: <span className="font-semibold text-foreground/60">{formatDate(generatedAt)}</span> via Global Intelligence Feed
+            Entry data checked: <span className="font-semibold text-foreground/60">{formatDate(syncStatus.lastChecked)}</span> (weekly)
+            {" · "}
+            Rules last changed: <span className="font-semibold text-foreground/60">{formatDate(syncStatus.lastChanged)}</span>
             {" · "}
             Source:{" "}
             <a

@@ -14,6 +14,20 @@ import https from "https";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const OUT_PATH = path.join(__dirname, "../client/src/lib/passport-index.json");
+// When we last compared against the source and when the rules last
+// actually changed — shown to users so they can see the data is current.
+const STATUS_PATH = path.join(__dirname, "../client/src/lib/visa-sync-status.json");
+
+function writeStatus(changed, now) {
+  const previous = existsSync(STATUS_PATH) ? JSON.parse(readFileSync(STATUS_PATH, "utf-8")) : {};
+  const status = {
+    _comment: "Written by scripts/sync_visa_data.mjs on every run. lastChecked: last comparison with the source dataset; lastChanged: last time any visa rule in it changed.",
+    lastChecked: now,
+    lastChanged: changed ? now : previous.lastChanged ?? now,
+  };
+  writeFileSync(STATUS_PATH, JSON.stringify(status, null, 2) + "\n");
+  console.log(`✓ Sync status: checked ${status.lastChecked}, last changed ${status.lastChanged}`);
+}
 const CSV_URL =
   "https://raw.githubusercontent.com/ilyankou/passport-index-dataset/master/passport-index-tidy.csv";
 
@@ -153,8 +167,9 @@ async function main() {
     }
   }
 
+  const now = new Date().toISOString();
   const output = {
-    generated: new Date().toISOString(),
+    generated: now,
     source: "https://github.com/ilyankou/passport-index-dataset",
     count: Object.keys(requirements).length,
     requirements,
@@ -173,6 +188,7 @@ async function main() {
       JSON.stringify(previousFile.stayDays) === JSON.stringify(output.stayDays)
     ) {
       console.log("✓ No visa data changes since the last sync — leaving the file untouched.");
+      writeStatus(false, now);
       return;
     }
     const previous = previousFile.requirements ?? {};
@@ -186,6 +202,7 @@ async function main() {
 
   writeFileSync(OUT_PATH, JSON.stringify(output));
   console.log(`✓ ${output.count} pairs written to ${OUT_PATH}`);
+  writeStatus(true, now);
   if (unmapped.size > 0) {
     console.warn(`! ${unmapped.size} unmapped country names:`, [...unmapped].join(", "));
   }

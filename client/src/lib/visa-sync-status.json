@@ -1,0 +1,5 @@
+{
+  "_comment": "Written by scripts/sync_visa_data.mjs on every run. lastChecked: last comparison with the source dataset; lastChanged: last time any visa rule in it changed.",
+  "lastChecked": "2026-10-03T15:22:58.349Z",
+  "lastChanged": "2026-03-08T20:33:46.582Z"
+}
