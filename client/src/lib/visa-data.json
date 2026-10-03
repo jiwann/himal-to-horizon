@@ -243,17 +243,17 @@
       "additionalConsulates": []
     },
     "NP->AE": {
-      "status": "Visa on Arrival",
-      "statusType": "visa_on_arrival",
-      "processingTime": "Immediate (on arrival)",
-      "fee": "AED 100–200 (~USD $27–$54)",
+      "status": "e-Visa (sponsor required)",
+      "statusType": "evisa",
+      "processingTime": "Typically 3-5 working days",
+      "fee": "Around AED 395–450 (~USD $110–125) via a sponsor; varies by sponsor",
       "applyOnline": {
         "available": true,
         "url": "https://icp.gov.ae/en/services/visaservices/"
       },
       "applyVFS": { "available": false },
       "officialUrl": "https://u.ae/en/information-and-services/visa-and-emirates-id/do-you-need-an-entry-permit-to-enter-the-uae",
-      "notes": "Nepali passport holders can obtain a 30-day Visa on Arrival at UAE airports. Pre-arranged e-Visa is recommended to avoid queues. Return ticket, hotel booking, and sufficient funds required.",
+      "notes": "Nepali passport holders are not visa-exempt and cannot get a visa on arrival. Apply for a UAE e-Visa before travel through a UAE-based sponsor — an airline that offers visa sponsorship, a hotel that processes visas, or a licensed UAE travel agency. Fees vary by sponsor.",
       "embassyInOrigin": true,
       "nearestEmbassy": {
         "city": "Kathmandu",

@@ -4,7 +4,7 @@ import { useLocation } from "wouter";
 import { Search, ChevronDown, X, ArrowRight, CheckCircle2, Globe, AlertTriangle, Info, XCircle } from "lucide-react";
 import allCountriesData from "@/lib/all-countries.json";
 import passportIndex from "@/lib/passport-index.json";
-import { getEffectiveStatus } from "@/lib/passport-lookup";
+import { getEffectiveStatus, getGuideStatus } from "@/lib/passport-lookup";
 import visaData from "@/lib/visa-data.json";
 
 type Country = { code: string; name: string; flag: string };
@@ -41,6 +41,8 @@ function resolveCountry(value: string | undefined): Country | null {
 
 function lookupStatus(origin: Country, dest: Country): StatusType {
   const key = `${origin.code}->${dest.code}`;
+  const guide = getGuideStatus(origin.code, dest.code);
+  if (guide) return guide as StatusType;
   const tier1 = (visaData as any).requirements[key];
   if (tier1?.statusType) return tier1.statusType as StatusType;
   const tier2 = (passportIndex as any).requirements[key] as string | undefined;

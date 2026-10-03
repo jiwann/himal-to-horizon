@@ -9,7 +9,7 @@ import jurisdictions from "@/lib/jurisdictions.json";
 import officialPortals from "@/lib/official-portals.json";
 import destRequirements from "@/lib/destination-requirements.json";
 import { setSEO, resetSEO } from "@/lib/seo";
-import { describeFee, getStayDays, getEffectiveStatus, getNepalFact, NEPAL_FACTS_CHECKED } from "@/lib/passport-lookup";
+import { describeFee, getStayDays, getEffectiveStatus, getGuideStatus, getNepalFact, NEPAL_FACTS_CHECKED } from "@/lib/passport-lookup";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
 
@@ -237,7 +237,8 @@ export default function VisaCheckPage() {
     ? ((destRequirements as any).destinations[destInfo.iso] ?? null)
     : null;
 
-  const statusType: StatusType = tier1 ? tier1.statusType : tier2Status;
+  const guideStatus = originInfo && destInfo ? getGuideStatus(originInfo.iso, destInfo.iso) : undefined;
+  const statusType: StatusType = (guideStatus as StatusType | undefined) ?? (tier1 ? tier1.statusType : tier2Status);
   const sc = STATUS_CONFIG[statusType] ?? STATUS_CONFIG.unknown;
 
   // Display values for the generic (tier-2) view. destReq is one record per

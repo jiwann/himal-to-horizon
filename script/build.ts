@@ -1,6 +1,7 @@
 import { build as esbuild } from "esbuild";
 import { build as viteBuild } from "vite";
 import { rm, readFile } from "fs/promises";
+import { execFileSync } from "child_process";
 
 // server deps to bundle to reduce openat(2) syscalls
 // which helps cold start times
@@ -33,6 +34,9 @@ const allowlist = [
 ];
 
 async function buildAll() {
+  // Keep the client's copy of guide statuses in sync with the guides.
+  execFileSync("node", ["scripts/export-guide-statuses.mjs"], { stdio: "inherit" });
+
   await rm("dist", { recursive: true, force: true });
 
   console.log("building client...");
