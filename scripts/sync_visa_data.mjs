@@ -164,7 +164,18 @@ async function main() {
   // nepal-visa-facts.json hand-overrides NP->* statuses; flag any NP change
   // in the source so those facts get re-checked rather than silently masking it.
   if (existsSync(OUT_PATH)) {
-    const previous = JSON.parse(readFileSync(OUT_PATH, "utf-8")).requirements ?? {};
+    const previousFile = JSON.parse(readFileSync(OUT_PATH, "utf-8"));
+    // The "generated" timestamp changes on every run; without this check
+    // the weekly workflow would commit (and redeploy) even when no visa
+    // rule changed.
+    if (
+      JSON.stringify(previousFile.requirements) === JSON.stringify(output.requirements) &&
+      JSON.stringify(previousFile.stayDays) === JSON.stringify(output.stayDays)
+    ) {
+      console.log("✓ No visa data changes since the last sync — leaving the file untouched.");
+      return;
+    }
+    const previous = previousFile.requirements ?? {};
     const npChanges = Object.keys(requirements)
       .filter((k) => k.startsWith("NP->") && previous[k] && previous[k] !== requirements[k])
       .map((k) => `${k}: ${previous[k]} -> ${requirements[k]}`);
