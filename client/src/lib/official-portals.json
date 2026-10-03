@@ -31,7 +31,7 @@
     "KR": {"url": "https://www.visa.go.kr/openPage.do?MENU_ID=10101", "label": "Korea eVisa Portal"},
     "CN": {"url": "https://www.visaforchina.cn", "label": "China Visa Application Service"},
     "SG": {"url": "https://www.ica.gov.sg/enter-transit-depart", "label": "Singapore ICA Visa Info"},
-    "MY": {"url": "https://www.imi.gov.my/index.php/en/main-services/visa.html", "label": "Malaysia IMI Visa Portal"},
+    "MY": {"url": "https://malaysiavisa.imi.gov.my", "label": "Malaysia eVISA (MyVISA, Immigration Dept.)"},
     "ID": {"url": "https://evisa.imigrasi.go.id", "label": "Indonesia eVisa (Imigrasi)"},
     "PH": {"url": "https://evisa.gov.ph", "label": "Philippines eVisa (DFA)"},
     "VN": {"url": "https://evisa.xuatnhapcanh.gov.vn", "label": "Vietnam eVisa Portal (Official)"},
