@@ -9,6 +9,7 @@ import logoImg from "@/assets/logo.png";
 import heroBg from "@/assets/hero_mountain_sunrise.png";
 import { AuthModal } from "@/components/auth-modal";
 import { VisaWidget } from "@/components/visa-widget";
+import { VisaAlertSignup } from "@/components/visa-alert-signup";
 import { UserMenu } from "@/components/user-menu";
 import { useLanguage } from "@/contexts/language-context";
 import { useAuth } from "@/contexts/auth-context";
@@ -344,6 +345,11 @@ export default function HomePage() {
             </button>
           ))}
         </div>
+      </section>
+
+      {/* ── Visa rule-change alerts ─────────────────────────────────────────── */}
+      <section className="px-4 pb-16 max-w-2xl mx-auto w-full">
+        <VisaAlertSignup source="home" />
       </section>
 
       {/* ── Footer ─────────────────────────────────────────────────────────── */}

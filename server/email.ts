@@ -132,3 +132,130 @@ export async function sendPriceAlertEmail(data: AlertEmailData): Promise<boolean
     return false;
   }
 }
+
+// ── Visa rule-change alerts ──────────────────────────────────────────────
+
+function escapeHtml(s: string): string {
+  return s.replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" })[c]!);
+}
+
+function siteUrl(): string {
+  return process.env.NODE_ENV === "production"
+    ? (process.env.APP_URL || "https://himaltohorizon.com")
+    : `http://localhost:${process.env.PORT || 5000}`;
+}
+
+function unsubscribeUrl(token: string): string {
+  return `${siteUrl()}/api/visa-alerts/unsubscribe?token=${encodeURIComponent(token)}`;
+}
+
+function unsubscribeFooter(token: string): string {
+  return `<p style="font-size:12px;color:#6B7280;text-align:center;margin-top:20px;">
+    You're receiving this because you subscribed to visa updates on Himal to Horizon.
+    <a href="${unsubscribeUrl(token)}" style="color:${BRAND_ACCENT};">Unsubscribe</a>
+  </p>`;
+}
+
+// RFC 8058 one-click unsubscribe, shown as an "Unsubscribe" button by Gmail etc.
+function unsubscribeHeaders(token: string): Record<string, string> {
+  return {
+    "List-Unsubscribe": `<${unsubscribeUrl(token)}>`,
+    "List-Unsubscribe-Post": "List-Unsubscribe=One-Click",
+  };
+}
+
+export async function sendVisaWelcomeEmail(input: {
+  toEmail: string;
+  toName: string | null;
+  countryNames: string[]; // empty = all countries
+  unsubscribeToken: string;
+}): Promise<boolean> {
+  if (!resend) {
+    console.log("[email] RESEND_API_KEY not set — skipping visa welcome email to", input.toEmail);
+    return false;
+  }
+  const following = input.countryNames.length
+    ? `visa rules for <strong>${input.countryNames.map(escapeHtml).join(", ")}</strong>`
+    : "visa rules for <strong>every country</strong>";
+  try {
+    const { error } = await resend.emails.send({
+      from: EMAIL_FROM,
+      to: input.toEmail,
+      subject: "You're subscribed to visa updates — Himal to Horizon",
+      headers: unsubscribeHeaders(input.unsubscribeToken),
+      html: emailWrapper(`
+    <div style="background:rgba(247,176,136,0.06);border:1px solid rgba(247,176,136,0.2);border-radius:16px;padding:28px;">
+      <div style="font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:${BRAND_ACCENT};margin-bottom:16px;">Visa updates</div>
+      <div style="font-size:20px;font-weight:700;margin-bottom:12px;">Namaste${input.toName ? `, ${escapeHtml(input.toName)}` : ""}!</div>
+      <p style="font-size:14px;color:#9CA3AF;line-height:1.6;">
+        We'll email you when ${following} change for Nepali passport holders — nothing else.
+      </p>
+      <div style="text-align:center;margin-top:20px;">
+        <a href="${siteUrl()}/visa-guides" style="display:inline-block;background:${BRAND_ACCENT};color:${BRAND_BG};padding:12px 26px;border-radius:10px;font-weight:700;text-decoration:none;font-size:14px;">
+          Browse visa guides
+        </a>
+      </div>
+    </div>
+    ${unsubscribeFooter(input.unsubscribeToken)}`),
+    });
+    // Resend reports API failures in the result rather than throwing.
+    if (error) {
+      console.error("[email] Visa welcome email rejected:", error);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("[email] Failed to send visa welcome email:", err);
+    return false;
+  }
+}
+
+export async function sendVisaAlertEmail(input: {
+  toEmail: string;
+  toName: string | null;
+  subject: string;
+  intro: string;
+  changes: { name: string; from: string; to: string; url: string }[];
+  unsubscribeToken: string;
+}): Promise<boolean> {
+  if (!resend) {
+    console.log("[email] RESEND_API_KEY not set — skipping visa alert to", input.toEmail);
+    return false;
+  }
+  const rows = input.changes
+    .map(
+      (c) => `<tr>
+        <td style="padding:10px 0;border-top:1px solid rgba(255,255,255,0.08);font-weight:700;">${escapeHtml(c.name)}</td>
+        <td style="padding:10px 0;border-top:1px solid rgba(255,255,255,0.08);font-size:13px;color:#9CA3AF;">
+          ${escapeHtml(c.from)} → <strong style="color:${BRAND_ACCENT};">${escapeHtml(c.to)}</strong>
+          <br><a href="${c.url}" style="color:${BRAND_ACCENT};font-size:12px;">See details</a>
+        </td>
+      </tr>`
+    )
+    .join("");
+  try {
+    const { error } = await resend.emails.send({
+      from: EMAIL_FROM,
+      to: input.toEmail,
+      subject: input.subject,
+      headers: unsubscribeHeaders(input.unsubscribeToken),
+      html: emailWrapper(`
+    <div style="background:rgba(247,176,136,0.06);border:1px solid rgba(247,176,136,0.2);border-radius:16px;padding:28px;">
+      <div style="font-size:11px;font-weight:800;letter-spacing:0.12em;text-transform:uppercase;color:${BRAND_ACCENT};margin-bottom:16px;">Visa update</div>
+      ${input.toName ? `<div style="font-size:16px;font-weight:700;margin-bottom:10px;">Namaste, ${escapeHtml(input.toName)}</div>` : ""}
+      <p style="font-size:14px;color:#D1D5DB;line-height:1.6;white-space:pre-line;">${escapeHtml(input.intro)}</p>
+      ${rows ? `<table style="width:100%;border-collapse:collapse;margin-top:8px;">${rows}</table>` : ""}
+      <p style="font-size:12px;color:#6B7280;margin-top:18px;">Always confirm with the embassy or official site before you apply.</p>
+    </div>
+    ${unsubscribeFooter(input.unsubscribeToken)}`),
+    });
+    if (error) {
+      console.error("[email] Visa alert rejected:", error);
+      return false;
+    }
+    return true;
+  } catch (err) {
+    console.error("[email] Failed to send visa alert:", err);
+    return false;
+  }
+}

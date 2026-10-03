@@ -27,6 +27,7 @@ import { VISA_CATEGORIES, type VisaCategory } from "@shared/visa-schema";
 import { sendPriceAlertEmail, sendVerificationEmail } from "./email";
 import { pool } from "./db";
 import { logger } from "./logger";
+import { WORLD_COUNTRIES_BY_CODE } from "@shared/countries";
 import bcrypt from "bcrypt";
 import passport from "passport";
 import crypto from "crypto";
@@ -2421,6 +2422,112 @@ Data sourced from the Passport Index dataset (github.com/ilyankou/passport-index
     } catch (err: any) {
       logger.error({ err }, "Failed to compute visa difficulty ranking");
       res.status(500).json({ error: "Failed to load visa difficulty ranking" });
+    }
+  });
+
+  // ── Visa rule-change alerts (subscriptions) ───────────────────────────
+  const visaAlertSubscribeLimit = rateLimit({ windowMs: 15 * 60 * 1000, max: 10, standardHeaders: true, legacyHeaders: false });
+  const visaAlertSubscribeSchema = z.object({
+    email: z.string().trim().email().max(254),
+    name: z.string().trim().max(100).optional().nullable(),
+    countries: z.array(z.string().regex(/^[A-Za-z]{2}$/)).max(60).optional(),
+    language: z.string().max(5).optional(),
+    source: z.string().max(40).optional().nullable(),
+  });
+
+  app.post("/api/visa-alerts/subscribe", visaAlertSubscribeLimit, async (req, res) => {
+    const parsed = visaAlertSubscribeSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: "Please enter a valid email address." });
+    try {
+      const { subscribe } = await import("./visa-alerts");
+      const { sendVisaWelcomeEmail } = await import("./email");
+      const { subscriber, isNew, token } = await subscribe(parsed.data);
+      if (isNew) {
+        const names = subscriber.countries.map((c: string) => WORLD_COUNTRIES_BY_CODE[c] ?? c);
+        sendVisaWelcomeEmail({ toEmail: subscriber.email, toName: subscriber.name, countryNames: names, unsubscribeToken: token })
+          .catch(() => {});
+      }
+      res.json({ ok: true, countries: subscriber.countries });
+    } catch (err: any) {
+      logger.error("Visa alert subscribe failed: " + err?.message);
+      res.status(500).json({ error: "Couldn't subscribe right now. Please try again." });
+    }
+  });
+
+  // GET from the email link; POST for RFC 8058 one-click unsubscribe.
+  const handleVisaAlertUnsubscribe = async (req: any, res: any) => {
+    const token = String(req.query.token ?? req.body?.token ?? "");
+    try {
+      const { unsubscribe } = await import("./visa-alerts");
+      const ok = token ? await unsubscribe(token) : false;
+      if (req.method === "POST") return res.status(ok ? 200 : 404).end();
+      res
+        .status(ok ? 200 : 404)
+        .type("html")
+        .send(`<!doctype html><html><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>Himal to Horizon</title></head>
+<body style="margin:0;background:#060D17;color:#E8DDD0;font-family:sans-serif;display:flex;min-height:100vh;align-items:center;justify-content:center;text-align:center;padding:24px">
+<div><h1 style="color:#F7B088;font-size:22px">${ok ? "You're unsubscribed" : "Link not recognised"}</h1>
+<p style="color:#9CA3AF">${ok ? "You won't get any more visa update emails from Himal to Horizon." : "This unsubscribe link is invalid or has already been used."}</p>
+<p><a href="/" style="color:#F7B088">Back to himaltohorizon.com</a></p></div></body></html>`);
+    } catch (err: any) {
+      logger.error("Visa alert unsubscribe failed: " + err?.message);
+      res.status(500).send("Something went wrong. Please try again later.");
+    }
+  };
+  app.get("/api/visa-alerts/unsubscribe", handleVisaAlertUnsubscribe);
+  app.post("/api/visa-alerts/unsubscribe", handleVisaAlertUnsubscribe);
+
+  app.get("/api/admin/visa-subscribers", requireAdmin, async (_req, res) => {
+    try {
+      const { listSubscribers } = await import("./visa-alerts");
+      res.json(await listSubscribers());
+    } catch (err: any) {
+      logger.error("List visa subscribers failed: " + err?.message);
+      res.status(500).json({ error: "Failed to load subscribers" });
+    }
+  });
+
+  app.get("/api/admin/visa-subscribers.csv", requireAdmin, async (_req, res) => {
+    try {
+      const { listSubscribers, subscribersToCsv } = await import("./visa-alerts");
+      res
+        .type("text/csv")
+        .setHeader("Content-Disposition", `attachment; filename="visa-subscribers-${new Date().toISOString().slice(0, 10)}.csv"`);
+      res.send(subscribersToCsv(await listSubscribers()));
+    } catch (err: any) {
+      logger.error("Export visa subscribers failed: " + err?.message);
+      res.status(500).json({ error: "Failed to export subscribers" });
+    }
+  });
+
+  app.delete("/api/admin/visa-subscribers/:id", requireAdmin, async (req, res) => {
+    const id = Number(req.params.id);
+    if (!Number.isInteger(id)) return res.status(400).json({ error: "Invalid id" });
+    try {
+      const { deleteSubscriber } = await import("./visa-alerts");
+      await deleteSubscriber(id);
+      res.json({ ok: true });
+    } catch (err: any) {
+      logger.error("Delete visa subscriber failed: " + err?.message);
+      res.status(500).json({ error: "Failed to delete subscriber" });
+    }
+  });
+
+  const visaAlertSendSchema = z.object({
+    countryCode: z.string().regex(/^[A-Za-z]{2}$/).optional().nullable(),
+    subject: z.string().trim().min(3).max(150),
+    message: z.string().trim().min(10).max(5000),
+  });
+  app.post("/api/admin/visa-alerts/send", requireAdmin, async (req, res) => {
+    const parsed = visaAlertSendSchema.safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ error: "Subject (3+ chars) and message (10+ chars) are required." });
+    if (!process.env.RESEND_API_KEY) return res.status(503).json({ error: "Email isn't set up yet: add RESEND_API_KEY in Render." });
+    try {
+      const { sendManualUpdate } = await import("./visa-alerts");
+      res.json({ sent: await sendManualUpdate(parsed.data) });
+    } catch (err: any) {
+      logger.error("Send visa update failed: " + err?.message);
+      res.status(500).json({ error: "Failed to send update" });
     }
   });
 

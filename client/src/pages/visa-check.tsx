@@ -11,6 +11,7 @@ import destRequirements from "@/lib/destination-requirements.json";
 import { setSEO, resetSEO } from "@/lib/seo";
 import visaSyncStatus from "@/lib/visa-sync-status.json";
 import { isLinkBroken } from "@/lib/link-status";
+import { VisaAlertSignup } from "@/components/visa-alert-signup";
 import { describeFee, getStayDays, getEffectiveStatus, getGuideStatus, getNepalFact, NEPAL_FACTS_CHECKED } from "@/lib/passport-lookup";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -836,6 +837,13 @@ export default function VisaCheckPage() {
             </div>
           )}
         </div>
+
+        {/* Rule-change alerts — the alert emails cover Nepali passports only */}
+        {originInfo?.iso === "NP" && destInfo && (
+          <div className="mb-6">
+            <VisaAlertSignup defaultCountry={destInfo.iso} countryName={destInfo.name} source="country-page" />
+          </div>
+        )}
 
         {/* ── Last Updated + Data Credit ────────────────────────────────────── */}
         <div

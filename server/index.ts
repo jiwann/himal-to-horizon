@@ -204,6 +204,10 @@ app.use((req, res, next) => {
   const { initBlogTable } = await import("./blog");
   const { storage } = await import("./storage");
   await storage.initCommunityTables().catch((e) => logger.warn("Community table init failed: " + e.message));
+  const { initVisaAlertTables, runVisaChangeAlerts } = await import("./visa-alerts");
+  const visaAlertsReady = await initVisaAlertTables()
+    .then(() => true)
+    .catch((e) => { logger.warn("Visa alert table init failed: " + e.message); return false; });
   await registerRoutes(httpServer, app);
 
   app.use((err: any, _req: Request, res: Response, next: NextFunction) => {
@@ -229,5 +233,10 @@ app.use((req, res, next) => {
   httpServer.listen(listenOptions, () => {
     log(`serving on port ${port}`);
     startPriceCron();
+    // New visa data arrives by deploy (weekly sync), so check for Nepal
+    // status changes on startup and email the people following them.
+    if (visaAlertsReady) {
+      runVisaChangeAlerts().catch((e) => logger.warn("Visa change alerts failed: " + e.message));
+    }
   });
 })();

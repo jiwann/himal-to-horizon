@@ -15,6 +15,7 @@ import {
 } from "lucide-react";
 import { SiGoogle } from "react-icons/si";
 import type { CommunityReport, AdminUser } from "@shared/schema";
+import { AdminVisaSubscribers } from "@/components/admin-visa-subscribers";
 
 // ── Types ──────────────────────────────────────────────────────────────────────
 type ContentSection =
@@ -605,6 +606,8 @@ export default function AdminPage() {
             ))}
           </div>
         )}
+
+        <AdminVisaSubscribers />
 
         {/* Members */}
         <div className="mt-12">
