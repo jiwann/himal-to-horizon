@@ -728,7 +728,7 @@ export default function VisaGuidesPage() {
 
   useEffect(() => {
     setSEO({
-      title: `${!fromCountry || fromCountry.code === "NP" ? "Visa Hub for Nepali" : `${fromCountry.name} Visa Hub`} — Tourist, Student & Work Visas`,
+      title: `${!fromCountry || fromCountry.code === "NP" ? "Visa Hub for Nepalese" : `${fromCountry.name} Visa Hub`} — Tourist, Student & Work Visas`,
       description: "The one-stop visa guide for your passport — steps, documents, fees, and official links for tourist, student, and work visas worldwide.",
       path: "/visa-guides",
     });

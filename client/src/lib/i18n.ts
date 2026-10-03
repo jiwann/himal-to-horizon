@@ -1459,7 +1459,7 @@ const en: Record<TranslationKey, string> = {
   "visa.badge_for_passport": "FOR {country} PASSPORT HOLDERS",
   "visa.badge_generic": "PASSPORT-SPECIFIC VISA GUIDES",
   "visa.hub_title": "{country} Visa Hub",
-  "visa.hub_title_np": "Visa Hub for Nepali",
+  "visa.hub_title_np": "Visa Hub for Nepalese",
   "visa.hub_title_generic": "Visa Hub",
   "visa.hub_subtitle": "One place for everything you need to apply for a visa — steps, documents, fees, and official links. Choose your passport country, then pick a destination to get started.",
   "visa.loading_generic": "Loading…",
