@@ -1,0 +1,6 @@
+{
+  "_comment": "Written by scripts/check_links.mjs. Links listed under broken are hidden on the site until fixed in the data files.",
+  "checked": null,
+  "total": 0,
+  "broken": {}
+}

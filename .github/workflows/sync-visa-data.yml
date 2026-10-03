@@ -4,12 +4,23 @@ on:
   schedule:
     - cron: "0 3 * * 1"
   workflow_dispatch:
+  # Check links on PRs that add or change them, so replacements are verified
+  # before merging. PR runs only report; they never commit.
+  pull_request:
+    paths:
+      - "client/src/lib/official-portals.json"
+      - "client/src/lib/visa-data.json"
+      - "client/src/lib/nepal-visa-facts.json"
+      - "server/data/visa-profiles.json"
+      - "scripts/check_links.mjs"
 
 permissions:
   contents: write
+  issues: write
 
 jobs:
   sync:
+    if: github.event_name != 'pull_request'
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -21,23 +32,63 @@ jobs:
       - name: Run sync script
         run: node scripts/sync_visa_data.mjs
 
+      - name: Check external links
+        run: |
+          node scripts/check_links.mjs --report link-report.md
+          cat link-report.md >> "$GITHUB_STEP_SUMMARY"
+
       - name: Check for changes
         id: diff
         run: |
           # visa-sync-status.json gets a new lastChecked date every run, so the
           # site can show when the data was last checked; passport-index.json
-          # only changes when a visa rule does.
-          git diff --quiet client/src/lib/passport-index.json client/src/lib/visa-sync-status.json && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+          # only changes when a visa rule does. link-status.json lists dead
+          # links the site hides.
+          git diff --quiet client/src/lib/passport-index.json client/src/lib/visa-sync-status.json client/src/lib/link-status.json && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
 
       - name: Commit refreshed visa data
         if: steps.diff.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add client/src/lib/passport-index.json client/src/lib/visa-sync-status.json
+          git add client/src/lib/passport-index.json client/src/lib/visa-sync-status.json client/src/lib/link-status.json
           if git diff --cached --quiet client/src/lib/passport-index.json; then
-            git commit -m "chore: visa data checked, no changes [$(date -u +%Y-%m-%d)]"
+            git commit -m "chore: visa data and links checked [$(date -u +%Y-%m-%d)]"
           else
             git commit -m "chore: auto-refresh passport-index.json [$(date -u +%Y-%m-%d)]"
           fi
           git push
+
+      - name: Open or update the broken-links issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          TITLE="Broken external links on the site"
+          BROKEN=$(node -e "console.log(Object.keys(require('./client/src/lib/link-status.json').broken).length)")
+          ISSUE=$(gh issue list --state open --search "\"$TITLE\" in:title" --json number --jq '.[0].number // empty')
+          if [ "$BROKEN" -gt 0 ]; then
+            if [ -n "$ISSUE" ]; then
+              gh issue edit "$ISSUE" --body-file link-report.md
+            else
+              gh issue create --title "$TITLE" --body-file link-report.md
+            fi
+          elif [ -n "$ISSUE" ]; then
+            gh issue close "$ISSUE" --comment "All external links pass as of $(date -u +%Y-%m-%d)."
+          fi
+
+  check-links:
+    if: github.event_name == 'pull_request'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Check external links
+        run: |
+          node scripts/check_links.mjs --report link-report.md
+          cat link-report.md >> "$GITHUB_STEP_SUMMARY"
