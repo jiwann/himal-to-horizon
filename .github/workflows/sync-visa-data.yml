@@ -24,13 +24,20 @@ jobs:
       - name: Check for changes
         id: diff
         run: |
-          git diff --quiet client/src/lib/passport-index.json && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
+          # visa-sync-status.json gets a new lastChecked date every run, so the
+          # site can show when the data was last checked; passport-index.json
+          # only changes when a visa rule does.
+          git diff --quiet client/src/lib/passport-index.json client/src/lib/visa-sync-status.json && echo "changed=false" >> $GITHUB_OUTPUT || echo "changed=true" >> $GITHUB_OUTPUT
 
-      - name: Commit updated passport-index.json
+      - name: Commit refreshed visa data
         if: steps.diff.outputs.changed == 'true'
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add client/src/lib/passport-index.json
-          git commit -m "chore: auto-refresh passport-index.json [$(date -u +%Y-%m-%d)]"
+          git add client/src/lib/passport-index.json client/src/lib/visa-sync-status.json
+          if git diff --cached --quiet client/src/lib/passport-index.json; then
+            git commit -m "chore: visa data checked, no changes [$(date -u +%Y-%m-%d)]"
+          else
+            git commit -m "chore: auto-refresh passport-index.json [$(date -u +%Y-%m-%d)]"
+          fi
           git push

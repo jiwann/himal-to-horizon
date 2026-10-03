@@ -2,6 +2,7 @@ import visaData from "@/lib/visa-data.json";
 import passportIndex from "@/lib/passport-index.json";
 import destRequirements from "@/lib/destination-requirements.json";
 import nepalVisaFacts from "@/lib/nepal-visa-facts.json";
+import nepalGuideStatuses from "@/lib/nepal-guide-statuses.json";
 
 // Country codes that show up in the worldwide passport-index dataset but
 // aren't in our main visa-data.json country list (mostly small island states
@@ -133,11 +134,20 @@ export function getNepalFact(destination: string): NepalVisaFact | undefined {
   return NEPAL_FACTS[destination];
 }
 
-// Entry status for a passport -> destination pair: the passport-index
-// dataset's value, corrected by the hand-checked Nepal facts where the
-// dataset is wrong for Nepalis (e.g. Palau, Bolivia need a visa first).
+const GUIDE_STATUSES = (nepalGuideStatuses as any).statuses as Record<string, string>;
+
+// Status from a full hand-checked guide, if one exists for this pair. These
+// beat every other source, including the older visa-data.json entries.
+export function getGuideStatus(passport: string, destination: string): string | undefined {
+  return passport === "NP" ? GUIDE_STATUSES[destination] : undefined;
+}
+
+// Entry status for a passport -> destination pair. For Nepali passports the
+// most specific source wins: a full hand-checked guide (e.g. Thailand's
+// e-visa), then the checked visa-free/on-arrival facts (e.g. Palau, Bolivia
+// need a visa first), then the passport-index community dataset.
 export function getEffectiveStatus(passport: string, destination: string, rawStatus: string): string {
-  if (passport === "NP") return NEPAL_FACTS[destination]?.status ?? rawStatus;
+  if (passport === "NP") return GUIDE_STATUSES[destination] ?? NEPAL_FACTS[destination]?.status ?? rawStatus;
   return rawStatus;
 }
 
