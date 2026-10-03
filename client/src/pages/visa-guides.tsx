@@ -360,7 +360,9 @@ function PickerScreen({
         </div>
         <h1 className="text-3xl font-extrabold text-white mb-2">
           {fromCountry
-            ? t("visa.hub_title" as TranslationKey).replace("{country}", fromCountry.name)
+            ? fromCountry.code === "NP"
+              ? t("visa.hub_title_np" as TranslationKey)
+              : t("visa.hub_title" as TranslationKey).replace("{country}", fromCountry.name)
             : t("visa.hub_title_generic" as TranslationKey)}
         </h1>
         <p className="text-sm" style={{ color: "rgba(255,255,255,0.6)" }}>
@@ -726,7 +728,7 @@ export default function VisaGuidesPage() {
 
   useEffect(() => {
     setSEO({
-      title: `${fromCountry?.name ?? "Nepal"} Visa Hub — Tourist, Student & Work Visas`,
+      title: `${!fromCountry || fromCountry.code === "NP" ? "Visa Hub for Nepali" : `${fromCountry.name} Visa Hub`} — Tourist, Student & Work Visas`,
       description: "The one-stop visa guide for your passport — steps, documents, fees, and official links for tourist, student, and work visas worldwide.",
       path: "/visa-guides",
     });
