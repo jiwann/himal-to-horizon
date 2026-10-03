@@ -8,6 +8,7 @@ import {
 import logoImg from "@/assets/logo.png";
 import heroBg from "@/assets/hero_mountain_sunrise.png";
 import { AuthModal } from "@/components/auth-modal";
+import { VisaWidget } from "@/components/visa-widget";
 import { UserMenu } from "@/components/user-menu";
 import { useLanguage } from "@/contexts/language-context";
 import { useAuth } from "@/contexts/auth-context";
@@ -242,6 +243,25 @@ export default function HomePage() {
           <p className="mt-6 text-base md:text-lg max-w-xl leading-relaxed" style={{ color: "rgba(255,255,255,0.92)", textShadow: "0 1px 12px rgba(0,0,0,0.55)" }}>
             {t("home.visa_hero_subtitle")}
           </p>
+
+          {/* Same any-passport checker as the Flights/Hotels/Cars pages, pre-set
+              to a Nepali passport since that's who this site is for — change it
+              to check any of the 199 passports. */}
+          <div
+            className="w-full max-w-2xl mt-8 rounded-2xl p-4 sm:p-5 text-left"
+            style={{
+              background: "rgba(6,13,23,0.72)",
+              border: "1px solid rgba(255,255,255,0.12)",
+              backdropFilter: "blur(14px)",
+              WebkitBackdropFilter: "blur(14px)",
+              boxShadow: "0 20px 50px -20px rgba(0,0,0,0.6)",
+            }}
+            data-testid="hero-visa-check"
+          >
+            <h2 className="text-sm font-bold mb-0.5" style={{ color: "#F7B088" }}>{t("common.visa_check_title")}</h2>
+            <p className="text-xs mb-3" style={{ color: "rgba(255,255,255,0.65)" }}>{t("common.visa_check_desc")}</p>
+            <VisaWidget defaultOrigin="NP" />
+          </div>
           <div className="flex flex-wrap gap-3 justify-center mt-8">
             <button
               type="button"
