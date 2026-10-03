@@ -71,7 +71,7 @@
       "sources": ["https://en.wikipedia.org/wiki/Visa_policy_of_Cambodia"] },
     "KM": { "status": "visa_on_arrival", "fee": "€30 / $50", "stay": 45, "confidence": "confirmed",
       "conditions": ["Pay in US dollars or euros."],
-      "sources": ["https://visafreenomads.com/guides/destinations/comoros"] },
+      "sources": ["https://en.wikipedia.org/wiki/Visa_policy_of_the_Comoros"] },
     "LA": { "status": "visa_on_arrival", "fee": "$30–50", "stay": 30, "confidence": "confirmed",
       "conditions": ["Available at major airports and land borders, or as an e-visa at laoevisa.gov.la."],
       "sources": ["https://en.wikipedia.org/wiki/Visa_policy_of_Laos"] },

@@ -10,6 +10,7 @@ import officialPortals from "@/lib/official-portals.json";
 import destRequirements from "@/lib/destination-requirements.json";
 import { setSEO, resetSEO } from "@/lib/seo";
 import visaSyncStatus from "@/lib/visa-sync-status.json";
+import { isLinkBroken } from "@/lib/link-status";
 import { describeFee, getStayDays, getEffectiveStatus, getGuideStatus, getNepalFact, NEPAL_FACTS_CHECKED } from "@/lib/passport-lookup";
 
 // ─── Types ────────────────────────────────────────────────────────────────────
@@ -446,7 +447,7 @@ export default function VisaCheckPage() {
           {/* ── Official Government Portal (always shown if available) ──── */}
           {(() => {
             const portal = (officialPortals as any).portals[destInfo.iso];
-            if (!portal) return null;
+            if (!portal || isLinkBroken(portal.url)) return null;
             return (
               <div
                 className="px-6 py-4 flex items-center justify-between gap-4 flex-wrap"
@@ -499,7 +500,7 @@ export default function VisaCheckPage() {
               <div className="px-6 py-5" style={{ borderBottom: "1px solid rgba(255,255,255,0.06)" }}>
                 <p className="text-[10px] font-black uppercase tracking-widest text-muted-foreground mb-3">Action Path</p>
                 <div className="flex flex-wrap gap-2">
-                  {tier1.applyOnline?.available && tier1.applyOnline?.url && (
+                  {tier1.applyOnline?.available && tier1.applyOnline?.url && !isLinkBroken(tier1.applyOnline.url) && (
                     <a
                       href={tier1.applyOnline.url}
                       target="_blank"
@@ -512,7 +513,7 @@ export default function VisaCheckPage() {
                       Apply Online (Official Link)
                     </a>
                   )}
-                  {tier1.applyVFS?.available && tier1.applyVFS?.url && (
+                  {tier1.applyVFS?.available && tier1.applyVFS?.url && !isLinkBroken(tier1.applyVFS.url) && (
                     <a
                       href={tier1.applyVFS.url}
                       target="_blank"
@@ -525,7 +526,7 @@ export default function VisaCheckPage() {
                       VFS Global
                     </a>
                   )}
-                  {tier1.officialUrl && (
+                  {tier1.officialUrl && !isLinkBroken(tier1.officialUrl) && (
                     <a
                       href={tier1.officialUrl}
                       target="_blank"
@@ -654,7 +655,7 @@ export default function VisaCheckPage() {
                   )}
                   <p className="text-[11px] text-muted-foreground">
                     Sources:{" "}
-                    {npFact.sources.map((url, i) => (
+                    {npFact.sources.filter((url) => !isLinkBroken(url)).map((url, i) => (
                       <span key={url}>
                         {i > 0 && ", "}
                         <a href={url} target="_blank" rel="noopener noreferrer" className="underline">{new URL(url).hostname.replace(/^www\./, "")}</a>

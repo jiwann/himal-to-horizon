@@ -13,6 +13,7 @@ import type { TranslationKey } from "@/lib/i18n";
 import { setSEO, resetSEO } from "@/lib/seo";
 import { DEFAULT_FROM_COUNTRY } from "@shared/countries";
 import { VisaWidget } from "@/components/visa-widget";
+import { isLinkBroken } from "@/lib/link-status";
 
 // ── Types (mirrors shared/visa-schema.ts on the server) ────────────────────
 
@@ -607,7 +608,7 @@ function DetailScreen({
       <div className="mb-6">
         <h2 className="text-sm font-bold text-white mb-3">{t("visa.official_links_heading" as TranslationKey)}</h2>
         <div className="flex flex-col gap-2">
-          {profile.officialLinks.map((link, i) => (
+          {profile.officialLinks.filter((link) => !isLinkBroken(link.url)).map((link, i) => (
             <a
               key={i}
               href={link.url}
