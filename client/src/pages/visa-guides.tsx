@@ -12,6 +12,7 @@ import { useLanguage } from "@/contexts/language-context";
 import type { TranslationKey } from "@/lib/i18n";
 import { setSEO, resetSEO } from "@/lib/seo";
 import { DEFAULT_FROM_COUNTRY } from "@shared/countries";
+import { VisaWidget } from "@/components/visa-widget";
 
 // ── Types (mirrors shared/visa-schema.ts on the server) ────────────────────
 
@@ -298,12 +299,11 @@ function FromCountryDropdown({
                   key={c.code}
                   type="button"
                   data-testid={`button-from-${c.code}`}
-                  disabled={!c.active}
-                  onClick={() => { if (c.active) { onSelect(c); setOpen(false); } }}
-                  className="w-full flex items-center justify-between gap-2 px-4 py-3 text-left text-sm font-medium transition-colors disabled:cursor-not-allowed"
+                  onClick={() => { onSelect(c); setOpen(false); }}
+                  className="w-full flex items-center justify-between gap-2 px-4 py-3 text-left text-sm font-medium transition-colors"
                   style={{
                     background: selected?.code === c.code ? "rgba(247,176,136,0.1)" : "transparent",
-                    color: !c.active ? "rgba(255,255,255,0.3)" : selected?.code === c.code ? AMBER : "#fff",
+                    color: selected?.code === c.code ? AMBER : "#fff",
                   }}
                 >
                   <span>{c.name}</span>
@@ -312,7 +312,7 @@ function FromCountryDropdown({
                       className="text-[10px] font-bold px-2 py-0.5 rounded-full shrink-0"
                       style={{ background: "rgba(255,255,255,0.06)", color: "rgba(255,255,255,0.4)" }}
                     >
-                      {t("visa.coming_soon_badge" as TranslationKey)}
+                      {t("visa.quick_check_badge" as TranslationKey)}
                     </span>
                   )}
                 </button>
@@ -379,6 +379,18 @@ function PickerScreen({
         />
       </div>
 
+      {fromCountry && !fromCountry.active ? (
+        // No step-by-step guides for this passport yet, but the passport-index
+        // data covers every destination: offer the same checker the
+        // Flights/Hotels pages use, set to this passport.
+        <div className="mt-2" data-testid="panel-quick-check">
+          <p className="text-xs leading-relaxed mb-3" style={{ color: "rgba(255,255,255,0.6)" }}>
+            {t("visa.quick_check_note" as TranslationKey).replace("{country}", fromCountry.name)}
+          </p>
+          <VisaWidget defaultOrigin={fromCountry.code} />
+        </div>
+      ) : (
+      <>
       <div className="mb-4">
         <CountryDropdown
           countries={countries}
@@ -409,6 +421,8 @@ function PickerScreen({
             ))}
           </div>
         </div>
+      )}
+      </>
       )}
     </div>
   );
@@ -718,7 +732,7 @@ export default function VisaGuidesPage() {
 
   const { data: countries = [], isLoading } = useQuery<CountryListing[]>({
     queryKey: ["/api/visa", fromCode, "countries"],
-    enabled: !!fromCountry,
+    enabled: !!fromCountry?.active,
     queryFn: async () => {
       const r = await fetch(`/api/visa/${fromCode}/countries`);
       if (!r.ok) throw new Error(`Failed to load countries (${r.status})`);
@@ -728,7 +742,7 @@ export default function VisaGuidesPage() {
 
   useEffect(() => {
     setSEO({
-      title: `${!fromCountry || fromCountry.code === "NP" ? "Visa Hub for Nepalese" : `${fromCountry.name} Visa Hub`} — Tourist, Student & Work Visas`,
+      title: `${!fromCountry || fromCountry.code === "NP" ? "Visa Hub for Nepalese" : `Visa Hub for ${fromCountry.name} Passport Holders`} — Tourist, Student & Work Visas`,
       description: "The one-stop visa guide for your passport — steps, documents, fees, and official links for tourist, student, and work visas worldwide.",
       path: "/visa-guides",
     });
